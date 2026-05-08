@@ -934,24 +934,19 @@ function doPDF(){
             db.ref('pm2').set(payload).catch(function(){});
           };
           db.ref('pm2').once('value',function(snap){
-            var v=snap.val();if(!v)return;
+            var v=snap.val();if(!v||!v.struct)return;
             var lts=parseInt(localStorage.getItem('ubm_ts')||'0');
-            if(v.ts>lts&&v.did!==myId){
-              if(v.struct)localStorage.setItem('ubm_struct',v.struct);
-              if(v.pay)localStorage.setItem('ubm_pay',v.pay);
-              if(v.month)localStorage.setItem('ubm_month',v.month);
+            var localEmpty=!S.buildings||S.buildings.length===0;
+            // Load from cloud if: local is empty OR cloud is newer (regardless of device)
+            if(localEmpty||v.ts>lts){
+              if(v.struct){localStorage.setItem('ubm_struct',v.struct);try{S=JSON.parse(v.struct);}catch(e){}}
+              if(v.pay){localStorage.setItem('ubm_pay',v.pay);try{PAY=JSON.parse(v.pay);}catch(e){}}
+              if(v.month){localStorage.setItem('ubm_month',v.month);ge('MP').value=v.month;}
               Object.keys(v).forEach(function(k){if(k.startsWith('ubm_r_'))localStorage.setItem(k,v[k]);});
               localStorage.setItem('ubm_ts',v.ts);
-              try{S=JSON.parse(v.struct);}catch(e){}
-              try{if(v.pay)PAY=JSON.parse(v.pay);}catch(e){}
-              if(v.month)ge('MP').value=v.month;
-              loadMonth(ge('MP').value);toast('🔄 Synced from other device!');
-            }else if(!S.buildings.length&&v.struct){
-              try{S=JSON.parse(v.struct);}catch(e){}
-              try{if(v.pay)PAY=JSON.parse(v.pay);}catch(e){}
-              if(v.month){ge('MP').value=v.month;localStorage.setItem('ubm_month',v.month);}
-              Object.keys(v).forEach(function(k){if(k.startsWith('ubm_r_'))localStorage.setItem(k,v[k]);});
-              loadMonth(ge('MP').value);toast('🔄 Loaded from cloud!');
+              loadMonth(ge('MP').value);
+              var cnt=S.buildings.reduce(function(s,b){return s+b.rooms.length;},0);
+              toast('✅ Loaded from cloud: '+S.buildings.length+' buildings, '+cnt+' rooms');
             }
           });
           db.ref('pm2/ts').on('value',function(snap){
