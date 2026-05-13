@@ -916,8 +916,12 @@ function doPDF(){
   ge('MP').value=savedM;lastM=savedM;
   var rd=localStorage.getItem('ubm_r_'+savedM);
   if(rd){try{var r=JSON.parse(rd);S.buildings.forEach(function(b){b.rooms.forEach(function(rm){rm.meters.forEach(function(mt){var x=r[rm.id]&&r[rm.id][mt.id];mt.last=x?x.last:'';mt.curr=x?x.curr:'';});});});}catch(e){}}
-  renderBilling();
-  if(S.buildings.length>0){setTimeout(function(){var c=S.buildings.reduce(function(s,b){return s+b.rooms.length;},0);toast('✅ Loaded: '+S.buildings.length+' buildings, '+c+' rooms');},500);}
+  // Show data if local exists, else show loading
+  if(S.buildings&&S.buildings.length>0){
+    renderBilling();
+  } else {
+    ge('BL').innerHTML='<div style="text-align:center;padding:60px 20px;color:#484f58"><div style="font-size:2.5rem;margin-bottom:12px">☁️</div><div style="font-weight:600;font-size:1rem;color:#8b949e;margin-bottom:8px">Loading your data...</div><div style="font-size:.78rem">Connecting to cloud, please wait</div></div>';
+  }
 
   // Firebase sync
   setTimeout(function(){
@@ -933,21 +937,32 @@ function doPDF(){
             for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.startsWith('ubm_r_'))payload[k]=localStorage.getItem(k);}
             db.ref('pm2').set(payload).catch(function(){});
           };
+          // ALWAYS load from Firebase - it is the single source of truth
           db.ref('pm2').once('value',function(snap){
-            var v=snap.val();if(!v||!v.struct)return;
-            var lts=parseInt(localStorage.getItem('ubm_ts')||'0');
-            var localEmpty=!S.buildings||S.buildings.length===0;
-            // Load from cloud if: local is empty OR cloud is newer (regardless of device)
-            if(localEmpty||v.ts>lts){
-              if(v.struct){localStorage.setItem('ubm_struct',v.struct);try{S=JSON.parse(v.struct);}catch(e){}}
-              if(v.pay){localStorage.setItem('ubm_pay',v.pay);try{PAY=JSON.parse(v.pay);}catch(e){}}
-              if(v.month){localStorage.setItem('ubm_month',v.month);ge('MP').value=v.month;}
-              Object.keys(v).forEach(function(k){if(k.startsWith('ubm_r_'))localStorage.setItem(k,v[k]);});
-              localStorage.setItem('ubm_ts',v.ts);
-              loadMonth(ge('MP').value);
-              var cnt=S.buildings.reduce(function(s,b){return s+b.rooms.length;},0);
-              toast('✅ Loaded from cloud: '+S.buildings.length+' buildings, '+cnt+' rooms');
+            var v=snap.val();
+            if(!v||!v.struct){
+              // Nothing in cloud yet - keep local data
+              renderBilling();
+              toast('📱 No cloud data yet - using local');
+              return;
             }
+            // Always apply cloud data - overwrite local
+            try{S=JSON.parse(v.struct);}catch(e){}
+            try{if(v.pay)PAY=JSON.parse(v.pay);}catch(e){}
+            if(v.struct)localStorage.setItem('ubm_struct',v.struct);
+            if(v.pay)localStorage.setItem('ubm_pay',v.pay);
+            if(v.month){
+              localStorage.setItem('ubm_month',v.month);
+              ge('MP').value=v.month;
+              lastM=v.month;
+            }
+            Object.keys(v).forEach(function(k){
+              if(k.startsWith('ubm_r_'))localStorage.setItem(k,v[k]);
+            });
+            localStorage.setItem('ubm_ts',v.ts||Date.now());
+            loadMonth(ge('MP').value);
+            var cnt=S.buildings.reduce(function(s,b){return s+b.rooms.length;},0);
+            toast('✅ '+S.buildings.length+' buildings, '+cnt+' rooms loaded!');
           });
           db.ref('pm2/ts').on('value',function(snap){
             var cts=snap.val();if(!cts)return;
@@ -958,7 +973,7 @@ function doPDF(){
         }catch(e){}
       });
     });
-  },2000);
+  },100);
 
   // SW
   if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});setTimeout(function(){navigator.serviceWorker.register('sw.js').catch(function(){});},1000);}
