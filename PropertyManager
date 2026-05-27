@@ -3,1061 +3,704 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="PropertyManager">
+<meta name="apple-mobile-web-app-title" content="PropManager">
 <meta name="theme-color" content="#0d1117">
-<link rel="manifest" href="manifest.json">
 <title>🏢 PropertyManager</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh}
-input,button,select{font-family:inherit}
-#topbar{background:#161b22;border-bottom:1px solid #21262d;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:8px}
-#topbar h1{font-size:.95rem;font-weight:700}
-#topbar h1 b{color:#58a6ff}
-#savedTxt{font-size:.68rem;color:#3fb950;opacity:0;transition:.3s}
-#savedTxt.on{opacity:1}
-input[type=month]{background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:5px 9px;color:#e6edf3;font-size:.78rem;outline:none;color-scheme:dark}
-#tabs{background:#161b22;border-bottom:1px solid #21262d;display:flex;overflow-x:auto}
-.tab{flex:1;border:none;background:none;color:#8b949e;font-family:inherit;font-size:.7rem;font-weight:500;padding:9px 4px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;min-width:60px}
-.tab.on{color:#58a6ff;font-weight:700;border-bottom-color:#58a6ff}
-.tab span{display:block;font-size:.95rem;margin-bottom:2px}
-#content{padding:14px 12px 100px;max-width:900px;margin:0 auto}
-.pg{display:none}.pg.on{display:block}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:7px 13px;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.15s;outline:none;white-space:nowrap}
-.btn:active{opacity:.7}
-.b-blue{background:#1f6feb;color:#fff}
-.b-green{background:#238636;color:#fff}
-.b-orange{background:#d29922;color:#fff}
-.b-purple{background:#6e40c9;color:#fff}
-.b-red{background:rgba(248,81,73,.12);color:#f85149;border:1px solid rgba(248,81,73,.2)}
-.b-ghost{background:transparent;color:#8b949e;border:1px solid #30363d}
-.b-sm{font-size:.7rem;padding:4px 9px}
-.abar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
-/* BUILDING */
-.bcard{background:#161b22;border:1px solid #21262d;border-radius:10px;margin-bottom:12px;overflow:hidden}
-.bhdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0d1117;cursor:pointer;user-select:none}
-.bnum{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
-.chev{color:#484f58;font-size:.7rem;transition:.2s;display:inline-block}
-.cls .chev{transform:rotate(-90deg)}
-.cls .cbody{display:none}
-.cbody{padding:12px}
-/* ROOM */
-.rcard{border:1px solid #30363d;border-radius:9px;margin-bottom:10px;overflow:hidden;background:#0d1117}
-.rhdr{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#161b22;flex-wrap:wrap;gap:6px}
-/* BILL SUMMARY */
-.bsum{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:10px 12px;border-bottom:1px solid #21262d}
-.bsi{background:#0d1117;border-radius:7px;padding:7px 9px;text-align:center}
-.bsi .bl{font-size:.58rem;color:#484f58;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
-.bsi .bv{font-size:.92rem;font-weight:700}
-/* METER TABLE */
-.mtbl{width:100%;border-collapse:collapse;font-size:.73rem}
-.mtbl th{background:rgba(255,255,255,.03);color:#8b949e;padding:5px 7px;text-align:center;font-size:.58rem;text-transform:uppercase;letter-spacing:.4px;font-weight:700}
-.mtbl th:first-child{text-align:left;padding-left:11px}
-.mtbl td{padding:6px 7px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;vertical-align:middle}
-.mtbl td:first-child{text-align:left;padding-left:11px}
-.mtbl input[type=number]{width:68px;background:#161b22;border:1px solid #30363d;border-radius:5px;padding:4px 5px;color:#e6edf3;font-size:.73rem;text-align:center;outline:none}
-.mtbl input:focus{border-color:#58a6ff}
-.dv{font-weight:700;color:#3fb950}
-.bv2{font-weight:700;color:#58a6ff}
-.zv{color:#484f58}
-.ev{color:#f85149;font-size:.68rem}
-.trow td{background:rgba(88,166,255,.06)!important;font-weight:700;border-top:1px solid rgba(88,166,255,.15)!important}
-.amrow{display:flex;gap:5px;padding:7px 12px;background:rgba(255,255,255,.02);border-top:1px dashed #21262d;flex-wrap:wrap;align-items:center}
-.amrow input{background:#0d1117;border:1px solid #30363d;border-radius:5px;padding:4px 7px;color:#e6edf3;font-size:.72rem;outline:none}
-/* PAY ROW */
-.prow{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid #21262d;flex-wrap:wrap;gap:6px}
-.pbtn{border:none;border-radius:6px;padding:5px 11px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:inherit}
-.pbtn.rp{background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3)}
-.pbtn.ru{background:rgba(248,81,73,.1);color:#f85149;border:1px solid rgba(248,81,73,.2)}
-.pbtn.wp{background:rgba(88,166,255,.15);color:#58a6ff;border:1px solid rgba(88,166,255,.3)}
-.pbtn.wu{background:rgba(248,81,73,.1);color:#f85149;border:1px solid rgba(248,81,73,.2)}
-/* MODAL */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;padding:14px}
-.ov.on{display:flex!important}
-.mbox{background:#161b22;border:1px solid #30363d;border-radius:14px;padding:20px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;animation:pop .18s ease}
+input,button,select,textarea{font-family:inherit}
 @keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
-.mbox h3{font-size:.95rem;font-weight:700;margin-bottom:14px}
-.frow{margin-bottom:11px}
-.frow label{display:block;font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8b949e;margin-bottom:4px}
-.frow input,.frow select{width:100%;background:#0d1117;border:1px solid #30363d;border-radius:7px;padding:8px 11px;color:#e6edf3;font-size:.86rem;outline:none}
-.frow input:focus{border-color:#58a6ff}
-.macts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
-/* OUTSTANDING */
-.ocard{background:#161b22;border:1px solid #21262d;border-radius:10px;margin-bottom:9px;overflow:hidden}
-.ohdr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;flex-wrap:wrap;gap:8px}
-.oav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0}
-.obody{padding:12px 14px;border-top:1px solid #21262d}
-.otbl{width:100%;border-collapse:collapse;font-size:.73rem}
-.otbl th{background:#0d1117;color:#8b949e;padding:6px 8px;text-align:left;font-size:.6rem;text-transform:uppercase;letter-spacing:.4px;font-weight:700;border-bottom:1px solid #21262d}
-.otbl td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
-.badge{display:inline-flex;align-items:center;font-size:.66rem;font-weight:700;border-radius:5px;padding:2px 8px;cursor:pointer;border:none;font-family:inherit}
-.badge.paid{background:rgba(63,185,80,.12);color:#3fb950}
-.badge.unpaid{background:rgba(248,81,73,.12);color:#f85149}
-/* STATS */
-.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:9px;margin-bottom:14px}
-.sc{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:12px}
-.si{font-size:1.2rem;margin-bottom:6px}
-.sv2{font-size:1.2rem;font-weight:700;line-height:1}
-.sl{font-size:.65rem;color:#8b949e;margin-top:3px}
-/* DEPOSIT */
-.dep{background:rgba(110,64,201,.08);border:1px solid rgba(110,64,201,.25);border-radius:8px;padding:9px 12px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
-/* TOAST */
-.toast-el{position:fixed;bottom:75px;left:50%;transform:translateX(-50%) translateY(10px);background:#161b22;border:1px solid #30363d;border-radius:9px;padding:9px 18px;font-size:.78rem;font-weight:600;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.6);transition:.25s;opacity:0;pointer-events:none}
-.toast-el.on{opacity:1;transform:translateX(-50%) translateY(0)}
-#installBanner{display:none;position:fixed;bottom:0;left:0;right:0;background:#1f6feb;color:#fff;padding:11px 14px;z-index:999;flex-direction:row;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.4)}
-@media(max-width:480px){.bsum{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
+<div id="root"></div>
+<script type="text/babel">
 
-<div id="topbar">
-  <h1>🏢 Property<b>Manager</b></h1>
-  <div style="display:flex;align-items:center;gap:8px">
-    <span id="savedTxt">✅ Saved</span>
-    <input type="month" id="MP" onchange="onMonthChange(this.value)">
-  </div>
-</div>
+const PAL=['#58a6ff','#3fb950','#d29922','#a78bfa','#f85149','#ffd166'];
+const BC=[{bg:'rgba(88,166,255,.15)',tx:'#58a6ff'},{bg:'rgba(63,185,80,.15)',tx:'#3fb950'},{bg:'rgba(210,153,34,.15)',tx:'#d29922'},{bg:'rgba(167,139,250,.15)',tx:'#a78bfa'},{bg:'rgba(248,81,73,.15)',tx:'#f85149'}];
+const MOS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const NOW=new Date();
+const DEF_M=`${NOW.getFullYear()}-${String(NOW.getMonth()+1).padStart(2,'0')}`;
+const uid=()=>'_'+Math.random().toString(36).substr(2,9);
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyQvai32XBdjl4tpJcK7vG5L3LvJrDqAMN0ZPdOKd2-wCguA7MoqVpyFeredNtPH8W8/exec';
+const SHEET_ID='1LQZhC8UjRB0xX2JHD8NLyIrJefbaxebP_d-DCOaTPdY';
+let syncTimer=null;
 
-<div id="tabs">
-  <button class="tab on" onclick="go('billing')" id="tab-billing"><span>🏢</span>Billing</button>
-  <button class="tab" onclick="go('outstanding')" id="tab-outstanding"><span>💰</span>Outstanding</button>
-  <button class="tab" onclick="go('tenants')" id="tab-tenants"><span>👤</span>Tenants</button>
-  <button class="tab" onclick="go('dashboard')" id="tab-dashboard"><span>📊</span>Dashboard</button>
-</div>
-
-<div id="content">
-
-<!-- BILLING -->
-<div class="pg on" id="pg-billing">
-  <div class="abar">
-    <button class="btn b-blue" onclick="openModal('mAB')">＋ Building</button>
-    <button class="btn b-ghost" onclick="copyLast()" style="font-size:.72rem">⬅ Last Month</button>
-    <button class="btn b-green" onclick="doExcel()">📊 Excel</button>
-    <button class="btn b-orange" onclick="doPDF()">📄 PDF</button>
-  </div>
-  <div id="BL"></div>
-</div>
-
-<!-- OUTSTANDING -->
-<div class="pg" id="pg-outstanding">
-  <div style="margin-bottom:12px"><div style="font-weight:700;margin-bottom:3px">💰 Outstanding Balances</div><div style="font-size:.72rem;color:#8b949e">All unpaid rent + water bills across all months</div></div>
-  <div class="sgrid" id="out-stats"></div>
-  <div id="out-list"></div>
-</div>
-
-<!-- TENANTS -->
-<div class="pg" id="pg-tenants">
-  <div style="margin-bottom:12px"><div style="font-weight:700;margin-bottom:3px">👤 Tenant Details</div><div style="font-size:.72rem;color:#8b949e">Security deposits & tenant information</div></div>
-  <input type="text" id="tSearch" placeholder="🔍 Search tenant or room…" oninput="renderTenants()" style="width:100%;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:8px 12px;color:#e6edf3;font-size:.78rem;outline:none;margin-bottom:12px">
-  <div id="tenant-list"></div>
-</div>
-
-<!-- DASHBOARD -->
-<div class="pg" id="pg-dashboard">
-  <div style="font-weight:700;margin-bottom:12px" id="dash-title">📊 Dashboard</div>
-  <div class="sgrid" id="dash-stats"></div>
-  <div style="background:#161b22;border:1px solid #21262d;border-radius:10px;padding:13px;margin-bottom:11px">
-    <div style="font-size:.8rem;font-weight:700;margin-bottom:11px">💰 Monthly Collection Trend</div>
-    <div style="display:flex;align-items:flex-end;gap:5px;height:90px;padding-bottom:16px" id="dash-chart"></div>
-  </div>
-</div>
-
-</div>
-
-<!-- MODALS -->
-<div class="ov" id="mAB"><div class="mbox">
-  <h3>🏢 Add Building</h3>
-  <div class="frow"><label>Building Name</label><input type="text" id="ABN" placeholder="e.g. Block A"></div>
-  <div class="macts"><button class="btn b-ghost" onclick="closeModal('mAB')">Cancel</button><button class="btn b-blue" onclick="addBuilding()">Add</button></div>
-</div></div>
-
-<div class="ov" id="mAR"><div class="mbox">
-  <h3>🏠 Add Room</h3>
-  <input type="hidden" id="ARbid">
-  <div class="frow"><label>Room Number</label><input type="text" id="ARN" placeholder="e.g. 101"></div>
-  <div class="frow"><label>Tenant Name</label><input type="text" id="ART" placeholder="e.g. Ravi Kumar"></div>
-  <div class="frow"><label>Monthly Rent (₹)</label><input type="number" id="ARR" placeholder="e.g. 5000"></div>
-  <div class="frow"><label>Security Deposit (₹)</label><input type="number" id="ARD" placeholder="e.g. 10000"></div>
-  <div class="frow"><label>Move-in Date</label><input type="date" id="ARMi"></div>
-  <div class="macts"><button class="btn b-ghost" onclick="closeModal('mAR')">Cancel</button><button class="btn b-blue" onclick="addRoom()">Add Room</button></div>
-</div></div>
-
-<div class="ov" id="mER"><div class="mbox">
-  <h3>✏️ Edit Room</h3>
-  <input type="hidden" id="ERbid"><input type="hidden" id="ERrid">
-  <div class="frow"><label>Room Number</label><input type="text" id="ERN"></div>
-  <div class="frow"><label>Tenant Name</label><input type="text" id="ERT"></div>
-  <div class="frow"><label>Monthly Rent (₹)</label><input type="number" id="ERR"></div>
-  <div class="frow"><label>Security Deposit (₹)</label><input type="number" id="ERD"></div>
-  <div class="frow"><label>Move-in Date</label><input type="date" id="ERMi"></div>
-  <div class="macts"><button class="btn b-ghost" onclick="closeModal('mER')">Cancel</button><button class="btn b-blue" onclick="saveEditRoom()">Save</button></div>
-</div></div>
-
-<div class="ov" id="mRB"><div class="mbox">
-  <h3>✏️ Rename Building</h3>
-  <input type="hidden" id="RBid">
-  <div class="frow"><label>Name</label><input type="text" id="RBN"></div>
-  <div class="macts"><button class="btn b-ghost" onclick="closeModal('mRB')">Cancel</button><button class="btn b-blue" onclick="saveRename()">Save</button></div>
-</div></div>
-
-<div id="installBanner">
-  <div style="display:flex;align-items:center;gap:10px"><div style="font-size:1.4rem">🏢</div><div><div style="font-weight:700;font-size:.86rem">Install PropertyManager</div><div style="font-size:.7rem;opacity:.85">Add to home screen</div></div></div>
-  <div style="display:flex;gap:7px"><button onclick="ge('installBanner').style.display='none'" style="background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 11px;border-radius:6px;font-size:.74rem;cursor:pointer">Later</button><button id="installBtn" style="background:#fff;border:none;color:#1f6feb;padding:5px 13px;border-radius:6px;font-size:.74rem;font-weight:700;cursor:pointer">Install</button></div>
-</div>
-
-<div class="toast-el" id="toastEl"></div>
-
-<!-- Sync Code Modal -->
-<div class="ov" id="syncCodeModal"><div class="mbox">
-  <h3>🔗 Enter Sync Code</h3>
-  <p style="font-size:.78rem;color:#8b949e;margin-bottom:12px">Ask the other phone for their sync code and enter it below to share data</p>
-  <div class="frow"><label>Sync Code</label><input type="text" id="syncCodeInput" placeholder="Paste sync code here" style="font-family:monospace;font-size:.82rem"></div>
-  <div class="macts">
-    <button class="btn b-ghost" onclick="closeModal('syncCodeModal')">Cancel</button>
-    <button class="btn b-blue" onclick="connectSyncCode()">Connect</button>
-  </div>
-</div></div>
-
-<script>
-'use strict';
-var S={buildings:[]};
-var PAY={};
-var PAL=['#58a6ff','#3fb950','#d29922','#a78bfa','#f85149','#ffd166'];
-var BC=[{bg:'rgba(88,166,255,.15)',tx:'#58a6ff'},{bg:'rgba(63,185,80,.15)',tx:'#3fb950'},{bg:'rgba(210,153,34,.15)',tx:'#d29922'},{bg:'rgba(167,139,250,.15)',tx:'#a78bfa'},{bg:'rgba(248,81,73,.15)',tx:'#f85149'}];
-var MOS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-var lastM=null;
-
-function uid(){return '_'+Math.random().toString(36).substr(2,9);}
-function ge(id){return document.getElementById(id);}
-function fmt(m){if(!m)return'';var p=m.split('-');return MOS[+p[1]-1]+' '+p[0];}
-function fmtS(m){if(!m)return'';var p=m.split('-');return MOS[+p[1]-1].slice(0,3)+' '+p[0].slice(2);}
-function curM(){return ge('MP').value;}
-function toast(msg){var t=ge('toastEl');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('on');},2800);}
-
-function openModal(id){ge(id).classList.add('on');}
-function closeModal(id){ge(id).classList.remove('on');}
-document.addEventListener('click',function(e){if(e.target.classList.contains('ov'))e.target.classList.remove('on');});
-
-function go(p){
-  document.querySelectorAll('.pg').forEach(function(el){el.classList.remove('on');});
-  document.querySelectorAll('.tab').forEach(function(el){el.classList.remove('on');});
-  ge('pg-'+p).classList.add('on');
-  ge('tab-'+p).classList.add('on');
-  if(p==='outstanding')renderOutstanding();
-  if(p==='tenants')renderTenants();
-  if(p==='dashboard')renderDashboard();
+// Push all data to Google Sheets
+function pushToSheets(data){
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>{
+    fetch(SCRIPT_URL,{
+      method:'POST',
+      body:JSON.stringify({sheetId:SHEET_ID,action:'save',payload:JSON.stringify(data)})
+    }).catch(()=>{});
+  },2000);
 }
 
-function onMonthChange(v){
-  if(lastM)saveAll(lastM);
-  lastM=v;
-  localStorage.setItem('ubm_month',v);
-  loadMonth(v);
-  setTimeout(function(){autoFillLastMonth(v);},150);
-  toast('📅 '+fmt(v));
+// Pull data from Google Sheets
+function pullFromSheets(){
+  return fetch(SCRIPT_URL+'?sheetId='+SHEET_ID)
+    .then(r=>r.text())
+    .then(t=>{
+      if(!t||t==='') return null;
+      try{return JSON.parse(t);}catch(e){return null;}
+    })
+    .catch(()=>null);
 }
 
-// CALC
-function mBill(m){var d=Math.max(0,(+m.curr||0)-(+m.last||0));return d*(+m.rate||0);}
-function mUse(m){return Math.max(0,(+m.curr||0)-(+m.last||0));}
-function waterBill(r){return r.meters.reduce(function(s,m){return s+mBill(m);},0);}
-function roomRent(r){return +(r.rent||0);}
-function roomTotal(r){return roomRent(r)+waterBill(r);}
-function bldgTotal(b){return b.rooms.reduce(function(s,r){return s+roomTotal(r);},0);}
-function getPS(rid,m){return PAY[rid]&&PAY[rid][m]?PAY[rid][m]:{rent:'unpaid',water:'unpaid'};}
-function isRP(rid,m){return getPS(rid,m).rent==='paid';}
-function isWP(rid,m){return getPS(rid,m).water==='paid';}
+const fmt=m=>{if(!m)return'';const[y,mo]=m.split('-');return MOS[+mo-1]+' '+y;};
+const fmtS=m=>{if(!m)return'';const[y,mo]=m.split('-');return MOS[+mo-1].slice(0,3)+' '+y.slice(2);};
+const mBill=m=>Math.max(0,(+m.curr||0)-(+m.last||0))*(+m.rate||0);
+const wBill=r=>r.meters.reduce((s,m)=>s+mBill(m),0);
+const rTotal=r=>(+r.rent||0)+wBill(r);
+const getPK=m=>{const[y,mo]=m.split('-').map(Number);const pm=mo===1?12:mo-1,py=mo===1?y-1:y;return`${py}-${String(pm).padStart(2,'0')}`;};
+const lsGet=k=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):null;}catch(e){return null;}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 
-function setPS(rid,m,field,val){
-  if(!PAY[rid])PAY[rid]={};
-  if(!PAY[rid][m])PAY[rid][m]={rent:'unpaid',water:'unpaid'};
-  PAY[rid][m][field]=val;
-  saveAll(m);
-  var cur=document.querySelector('.pg.on');
-  if(cur&&cur.id==='pg-outstanding')renderOutstanding();
-  if(cur&&cur.id==='pg-tenants')renderTenants();
+function Modal({show,onClose,title,children}){
+  if(!show)return null;
+  return(
+    <div onClick={onClose} style={{position:'fixed',inset:0,background:'rgba(0,0,0,.88)',zIndex:300,display:'flex',alignItems:'center',justifyContent:'center',padding:14}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:'#161b22',border:'1px solid #30363d',borderRadius:14,padding:20,width:'100%',maxWidth:420,maxHeight:'90vh',overflowY:'auto'}}>
+        <div style={{fontWeight:700,fontSize:'.95rem',marginBottom:14}}>{title}</div>
+        {children}
+      </div>
+    </div>
+  );
 }
 
-function togRP(rid,m){
-  var now=isRP(rid,m);
-  setPS(rid,m,'rent',now?'unpaid':'paid');
-  toast(now?'Rent marked unpaid':'✅ Rent marked paid!');
-  renderBilling();
-}
-function togWP(rid,m){
-  var now=isWP(rid,m);
-  setPS(rid,m,'water',now?'unpaid':'paid');
-  toast(now?'Water marked unpaid':'✅ Water marked paid!');
-  renderBilling();
+function Btn({children,onClick,color='#1f6feb',text='#fff',ghost,danger,sm,style={}}){
+  return <button onClick={onClick} style={{display:'inline-flex',alignItems:'center',justifyContent:'center',gap:4,padding:sm?'4px 9px':'7px 13px',border:ghost?'1px solid #30363d':danger?'1px solid rgba(248,81,73,.2)':'none',borderRadius:8,fontSize:sm?'.7rem':'.78rem',fontWeight:600,cursor:'pointer',background:ghost?'transparent':danger?'rgba(248,81,73,.12)':color,color:ghost?'#8b949e':danger?'#f85149':text,fontFamily:'inherit',...style}}>{children}</button>;
 }
 
-// SAVE/LOAD
-function saveAll(m){
-  if(!m)return;
-  localStorage.setItem('ubm_struct',JSON.stringify(S));
-  localStorage.setItem('ubm_pay',JSON.stringify(PAY));
-  localStorage.setItem('ubm_month',m);
-  var readings={};
-  S.buildings.forEach(function(b){b.rooms.forEach(function(r){r.meters.forEach(function(mt){
-    if(!readings[r.id])readings[r.id]={};
-    readings[r.id][mt.id]={last:mt.last||'',curr:mt.curr||''};
-  });});});
-  localStorage.setItem('ubm_r_'+m,JSON.stringify(readings));
-  localStorage.setItem('ubm_ts',Date.now().toString());
-  ge('savedTxt').textContent='✅ Saved';
-  ge('savedTxt').classList.add('on');
-  setTimeout(function(){ge('savedTxt').classList.remove('on');},2000);
-  if(typeof window.syncCloud==='function')window.syncCloud();
+function FRow({label,children}){
+  return <div style={{marginBottom:11}}><label style={{display:'block',fontSize:'.63rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'.5px',color:'#8b949e',marginBottom:4}}>{label}</label>{children}</div>;
 }
 
-function loadMonth(m){
-  var st=localStorage.getItem('ubm_struct');
-  if(st){try{S=JSON.parse(st);}catch(e){}}
-  var py=localStorage.getItem('ubm_pay');
-  if(py){try{PAY=JSON.parse(py);}catch(e){}}
-  var rd=localStorage.getItem('ubm_r_'+m);
-  if(rd){try{
-    var r=JSON.parse(rd);
-    S.buildings.forEach(function(b){b.rooms.forEach(function(rm){rm.meters.forEach(function(mt){
-      var x=r[rm.id]&&r[rm.id][mt.id];mt.last=x?x.last:'';mt.curr=x?x.curr:'';
-    });});});
-  }catch(e){}}
-  else{S.buildings.forEach(function(b){b.rooms.forEach(function(r){r.meters.forEach(function(mt){mt.last='';mt.curr='';});});});}
-  renderBilling();
+function Inp({value,onChange,placeholder,type='text',style={}}){
+  return <input type={type} value={value||''} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={{width:'100%',background:'#0d1117',border:'1px solid #30363d',borderRadius:7,padding:'8px 11px',color:'#e6edf3',fontSize:'.86rem',outline:'none',fontFamily:'inherit',...style}}/>;
 }
 
-function autoSave(){saveAll(curM());}
-
-function emergencySave(){
-  var m=ge('MP').value||lastM;
-  if(!m)return;
-  saveAll(m);
-}
-window.addEventListener('beforeunload',emergencySave);
-window.addEventListener('pagehide',emergencySave);
-document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')emergencySave();});
-setInterval(emergencySave,5000);
-
-// MUTATIONS
-function addBuilding(){
-  var n=ge('ABN').value.trim();if(!n){alert('Enter building name');return;}
-  S.buildings.push({id:uid(),name:n,rooms:[]});
-  ge('ABN').value='';closeModal('mAB');renderBilling();autoSave();toast('🏢 "'+n+'" added!');
-}
-
-function addRoom(){
-  var bid=ge('ARbid').value,n=ge('ARN').value.trim();
-  if(!n){alert('Enter room number');return;}
-  var b=S.buildings.find(function(x){return x.id===bid;});if(!b)return;
-  b.rooms.push({id:uid(),name:n,tenant:ge('ART').value.trim(),rent:+ge('ARR').value||0,deposit:+ge('ARD').value||0,moveIn:ge('ARMi').value,meters:[]});
-  ge('ARN').value='';ge('ART').value='';ge('ARR').value='';ge('ARD').value='';ge('ARMi').value='';
-  closeModal('mAR');renderBilling();autoSave();toast('🏠 Room "'+n+'" added!');
-}
-
-function openAddRoom(bid){
-  ge('ARbid').value=bid;ge('ARN').value='';ge('ART').value='';ge('ARR').value='';ge('ARD').value='';ge('ARMi').value='';
-  openModal('mAR');
-}
-
-function openEditRoom(bid,rid){
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});if(!r)return;
-  ge('ERbid').value=bid;ge('ERrid').value=rid;
-  ge('ERN').value=r.name;ge('ERT').value=r.tenant||'';
-  ge('ERR').value=r.rent||'';ge('ERD').value=r.deposit||'';ge('ERMi').value=r.moveIn||'';
-  openModal('mER');
-}
-
-function saveEditRoom(){
-  var bid=ge('ERbid').value,rid=ge('ERrid').value;
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});if(!r)return;
-  r.name=ge('ERN').value.trim();r.tenant=ge('ERT').value.trim();
-  r.rent=+ge('ERR').value||0;r.deposit=+ge('ERD').value||0;r.moveIn=ge('ERMi').value;
-  closeModal('mER');renderBilling();autoSave();toast('✅ Room updated!');
+// ── EXPORT FUNCTIONS ──────────────────────────────
+function exportExcel(S,PAY,allMs,getMS){
+  const script=document.createElement('script');
+  script.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  script.onload=()=>{
+    const wb=window.XLSX.utils.book_new();
+    const gPS=(rid,m)=>PAY[rid]?.[m]||{rent:'unpaid',water:'unpaid'};
+    const ms=allMs();
+    const H=(v,bg)=>({v,t:'s',s:{font:{bold:true,color:{rgb:'FFFFFF'},sz:10},fill:{fgColor:{rgb:bg||'1F3A5F'}},alignment:{horizontal:'center'}}});
+    const T=v=>({v:v||'',t:'s',s:{font:{sz:10}}});
+    const M=v=>({v:+v||0,t:'n',s:{numFmt:'#,##0.00',font:{color:{rgb:'166534'},sz:10},alignment:{horizontal:'right'}}});
+    const rows=[[H('PROPERTY MANAGER — MONTHLY BILLS','0F2744'),'','','','','','','',''],[''],
+      [H('Month'),H('Building'),H('Room'),H('Tenant'),H('Rent'),H('Water'),H('Total'),H('Rent Status'),H('Water Status')]];
+    ms.forEach(m=>{
+      const sv=getMS(m);if(!sv)return;
+      sv.buildings.forEach(b=>b.rooms.forEach(r=>{
+        const wb=r.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
+        const rr=+r.rent||0,ps=gPS(r.id,m);
+        rows.push([T(fmt(m)),T(b.name),T(r.name),T(r.tenant||''),M(rr),M(wb),M(rr+wb),T(ps.rent==='paid'?'✓ Paid':'✗ Unpaid'),T(ps.water==='paid'?'✓ Paid':'✗ Unpaid')]);
+      }));
+      rows.push([]);
+    });
+    const ws=window.XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols']=[{wch:18},{wch:14},{wch:10},{wch:18},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12}];
+    window.XLSX.utils.book_append_sheet(wb,ws,'Monthly Bills');
+    const oRows=[[H('OUTSTANDING & DEPOSITS','0F2744'),'','','',''],[''],
+      [H('Building'),H('Room'),H('Tenant'),H('Monthly Rent'),H('Security Deposit'),H('Total Outstanding')]];
+    S.buildings.forEach(b=>b.rooms.forEach(r=>{
+      let due=0;
+      ms.forEach(m=>{
+        const sv=getMS(m);if(!sv)return;
+        const sb=sv.buildings.find(x=>x.id===b.id);
+        const sr=sb?.rooms.find(x=>x.id===r.id);if(!sr)return;
+        const wb=sr.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
+        const ps=gPS(r.id,m);
+        due+=(ps.rent!=='paid'?+sr.rent||0:0)+(ps.water!=='paid'?wb:0);
+      });
+      oRows.push([T(b.name),T(r.name),T(r.tenant||''),M(r.rent||0),M(r.deposit||0),M(due)]);
+    }));
+    const ws2=window.XLSX.utils.aoa_to_sheet(oRows);
+    ws2['!cols']=[{wch:14},{wch:10},{wch:18},{wch:14},{wch:16},{wch:16}];
+    window.XLSX.utils.book_append_sheet(wb,ws2,'Outstanding');
+    window.XLSX.writeFile(wb,'PropertyManager_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  };
+  document.head.appendChild(script);
 }
 
-function addMeterInline(bid,rid){
-  var n=ge('MN-'+rid).value.trim(),u=ge('MU-'+rid).value.trim(),ra=parseFloat(ge('MR-'+rid).value)||0;
-  if(!n){alert('Enter meter name');return;}
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});if(!r)return;
-  r.meters.push({id:uid(),name:n,unit:u||'units',rate:ra,last:'',curr:''});
-  renderBilling();autoSave();toast(n+' meter added!');
-}
-
-function delMeter(bid,rid,mid){
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});if(!r)return;
-  r.meters=r.meters.filter(function(m){return m.id!==mid;});
-  renderBilling();autoSave();
-}
-
-function delRoom(bid,rid){
-  if(!confirm('Delete room?'))return;
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  b.rooms=b.rooms.filter(function(r){return r.id!==rid;});
-  renderBilling();autoSave();
-}
-
-function delBuilding(bid){
-  if(!confirm('Delete building and all rooms?'))return;
-  S.buildings=S.buildings.filter(function(b){return b.id!==bid;});
-  renderBilling();autoSave();
-}
-
-function openRename(bid){
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  ge('RBid').value=bid;ge('RBN').value=b.name;openModal('mRB');
-}
-
-function saveRename(){
-  var bid=ge('RBid').value,n=ge('RBN').value.trim();if(!n)return;
-  var b=S.buildings.find(function(x){return x.id===bid;});if(b)b.name=n;
-  closeModal('mRB');renderBilling();autoSave();
-}
-
-function updReading(bid,rid,mid,field,val){
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});
-  var m=r&&r.meters.find(function(x){return x.id===mid;});if(!m)return;
-  m[field]=val;
-  var lv=+m.last||0,cv=+m.curr||0,diff=cv-lv;
-  var bill=diff>0?(diff*(+m.rate||0)).toFixed(2):null;
-  var dc=ge('DC-'+mid),bc=ge('BC-'+mid);
-  if(dc&&bc){
-    if(diff<0){dc.innerHTML='<span class="ev">'+diff+'⚠</span>';bc.innerHTML='<span class="ev">Err</span>';}
-    else{dc.innerHTML='<span class="dv">'+diff+' '+m.unit+'</span>';bc.innerHTML=bill?'<span class="bv2">₹'+bill+'</span>':'<span class="zv">—</span>';}
-  }
-  var wb=waterBill(r),tot=roomRent(r)+wb;
-  var wt=ge('WB-'+rid);if(wt)wt.textContent='₹'+wb.toFixed(2);
-  var tt=ge('TB-'+rid);if(tt)tt.textContent='₹'+tot.toFixed(2);
-  var rt=ge('RT-'+rid);if(rt)rt.textContent=tot>0?'₹'+tot.toFixed(2):'—';
-  autoSave();
-}
-
-// COPY LAST MONTH
-function getPrevKey(m){var p=m.split('-').map(Number);var pm=p[1]===1?12:p[1]-1,py=p[1]===1?p[0]-1:p[0];return py+'-'+String(pm).padStart(2,'0');}
-
-function copyLast(){
-  var m=curM();if(!m){toast('Select a month');return;}
-  var pk=getPrevKey(m),rdSv=localStorage.getItem('ubm_r_'+pk);
-  if(rdSv){try{
-    var pr=JSON.parse(rdSv);
-    S.buildings.forEach(function(b){b.rooms.forEach(function(r){r.meters.forEach(function(mt){
-      var x=pr[r.id]&&pr[r.id][mt.id];mt.last=x?(x.curr||x.last||''):'';mt.curr='';
-    });});});
-    renderBilling();autoSave();toast('✅ Last month readings loaded!');
-  }catch(e){toast('Error');}}
-  else toast('⚠️ No data for previous month');
-}
-
-function autoFillLastMonth(m){
-  var rdSv=localStorage.getItem('ubm_r_'+m);if(rdSv)return;
-  var pk=getPrevKey(m),prSv=localStorage.getItem('ubm_r_'+pk);if(!prSv)return;
-  try{
-    var pr=JSON.parse(prSv);if(!Object.keys(pr).length)return;
-    S.buildings.forEach(function(b){b.rooms.forEach(function(r){r.meters.forEach(function(mt){
-      var x=pr[r.id]&&pr[r.id][mt.id];mt.last=x?(x.curr||''):'';mt.curr='';
-    });});});
-    renderBilling();autoSave();toast('✅ Last month readings auto-loaded!');
-  }catch(e){}
-}
-
-// RENDER BILLING
-function renderBilling(){
-  var el=ge('BL'),m=curM();
-  if(!S.buildings.length){
-    el.innerHTML='<div style="text-align:center;padding:50px 20px;color:#484f58"><div style="font-size:2.5rem;margin-bottom:12px">🏢</div><div style="font-weight:600;font-size:1rem;color:#8b949e;margin-bottom:6px">No buildings yet</div><div style="font-size:.82rem">Tap <b style="color:#58a6ff">＋ Building</b> above</div></div>';
-    return;
-  }
-  el.innerHTML='';
-  S.buildings.forEach(function(b,bi){
-    var c=BC[bi%BC.length],bt=bldgTotal(b);
-    var div=document.createElement('div');div.className='bcard';div.id='BC-'+b.id;
-    div.innerHTML=
-      '<div class="bhdr" onclick="toggleCard(\'BC-\'+ \''+b.id+'\')">' +
-        '<div style="display:flex;align-items:center;gap:9px">' +
-          '<div class="bnum" style="background:'+c.bg+';color:'+c.tx+'">'+(bi+1)+'</div>' +
-          '<div><div style="font-weight:700;font-size:.9rem">'+b.name+'</div><div style="font-size:.65rem;color:#8b949e;margin-top:1px">'+b.rooms.length+' room'+(b.rooms.length!==1?'s':'')+'</div></div>' +
-        '</div>' +
-        '<div style="display:flex;align-items:center;gap:9px"><div style="font-weight:700;color:#3fb950">'+(bt>0?'₹'+bt.toFixed(2):'—')+'</div><span class="chev">▼</span></div>' +
-      '</div>' +
-      '<div class="cbody"><div id="RL-'+b.id+'"></div>' +
-        '<div class="abar" style="margin-top:8px;margin-bottom:0">' +
-          '<button class="btn b-blue b-sm" onclick="openAddRoom(\''+b.id+'\')">＋ Add Room</button>' +
-          '<button class="btn b-ghost b-sm" onclick="openRename(\''+b.id+'\')">✏️ Rename</button>' +
-          '<button class="btn b-red b-sm" onclick="delBuilding(\''+b.id+'\')">🗑</button>' +
-        '</div>' +
-      '</div>';
-    el.appendChild(div);
-    var rl=ge('RL-'+b.id);
-    b.rooms.forEach(function(r){rl.appendChild(makeRoom(b,r,m));});
+function exportPDF(S,PAY,allMs,getMS){
+  const gPS=(rid,m)=>PAY[rid]?.[m]||{rent:'unpaid',water:'unpaid'};
+  const ms=allMs();if(!ms.length){alert('No data to export');return;}
+  const now=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Property Report</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff}.cov{padding:34px;text-align:center;page-break-after:always}.cov h1{font-size:22px;color:#1e3a5f}.ms{padding:14px 18px;page-break-after:always}.mt{background:#1e3a5f;color:#fff;padding:7px 13px;font-size:12px;font-weight:bold}.sr{display:flex;gap:7px;margin:9px 0}.sb{flex:1;border:1px solid #ddd;border-radius:4px;padding:7px;text-align:center}.v{font-size:14px;font-weight:bold;color:#1e3a5f}.l{font-size:9px;color:#666}table{width:100%;border-collapse:collapse;margin-bottom:11px;font-size:10px}th{background:#1e3a5f;color:#fff;padding:5px 6px;text-align:left}td{padding:4px 6px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}.paid{color:#166534;font-weight:bold}.unpaid{color:#991b1b;font-weight:bold}.ra{text-align:right;font-weight:bold}.ft{font-size:9px;color:#aaa;text-align:center;padding:4px}@media print{.ms{page-break-after:always}}</style></head><body>`;
+  html+=`<div class="cov"><h1>🏢 Property Manager Report</h1><p>${now} · ${ms.length} months</p></div>`;
+  ms.forEach(m=>{
+    const sv=getMS(m);if(!sv)return;
+    let tR=0,tW=0,pc=0,uc=0;
+    sv.buildings.forEach(b=>b.rooms.forEach(r=>{
+      const wb=r.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
+      tR+=(+r.rent||0);tW+=wb;
+      const ps=gPS(r.id,m);
+      if(ps.rent==='paid'&&ps.water==='paid')pc++;else uc++;
+    }));
+    html+=`<div class="ms"><div class="mt">📅 ${fmt(m)}</div><div class="sr"><div class="sb"><div class="v">₹${(tR+tW).toFixed(2)}</div><div class="l">Total</div></div><div class="sb"><div class="v">₹${tR.toFixed(2)}</div><div class="l">Rent</div></div><div class="sb"><div class="v">₹${tW.toFixed(2)}</div><div class="l">Water</div></div><div class="sb"><div class="v" style="color:#166534">${pc}</div><div class="l">Paid</div></div><div class="sb"><div class="v" style="color:#991b1b">${uc}</div><div class="l">Unpaid</div></div></div>`;
+    sv.buildings.forEach(b=>{
+      html+=`<div style="font-weight:bold;font-size:10px;color:#555;margin:7px 0 3px">🏢 ${b.name}</div><table><thead><tr><th>Room</th><th>Tenant</th><th class="ra">Rent</th><th class="ra">Water</th><th class="ra">Total</th><th>Rent</th><th>Water</th></tr></thead><tbody>`;
+      b.rooms.forEach(r=>{
+        const wb=r.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
+        const rr=+r.rent||0,ps=gPS(r.id,m);
+        html+=`<tr><td>${r.name}</td><td>${r.tenant||'—'}</td><td class="ra">₹${rr.toFixed(2)}</td><td class="ra">₹${wb.toFixed(2)}</td><td class="ra">₹${(rr+wb).toFixed(2)}</td><td class="${ps.rent==='paid'?'paid':'unpaid'}">${ps.rent==='paid'?'✓ Paid':'✗ Unpaid'}</td><td class="${ps.water==='paid'?'paid':'unpaid'}">${ps.water==='paid'?'✓ Paid':'✗ Unpaid'}</td></tr>`;
+      });
+      html+=`</tbody></table>`;
+    });
+    html+=`<div class="ft">PropertyManager · ${fmt(m)}</div></div>`;
   });
+  html+=`</body></html>`;
+  const w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),700);
 }
 
-function makeRoom(b,r,m){
-  var wb=waterBill(r),rr=roomRent(r),tot=rr+wb;
-  var ps=getPS(r.id,m),rPaid=ps.rent==='paid',wPaid=ps.water==='paid';
-  var div=document.createElement('div');div.className='rcard';
+// ── BILLING PAGE ──────────────────────────────────
+function BillingPage({S,setS,PAY,setPAY,month,showToast,allMs,getMS,applyReadings}){
+  const[showAB,setShowAB]=useState(false);
+  const[showAR,setShowAR]=useState(false);
+  const[showER,setShowER]=useState(false);
+  const[showRN,setShowRN]=useState(false);
+  const[arBid,setArBid]=useState('');
+  const[abN,setAbN]=useState('');
+  const[arD,setArD]=useState({name:'',tenant:'',rent:'',deposit:'',moveIn:''});
+  const[erBid,setErBid]=useState('');
+  const[erRid,setErRid]=useState('');
+  const[erD,setErD]=useState({name:'',tenant:'',rent:'',deposit:'',moveIn:''});
+  const[rnBid,setRnBid]=useState('');
+  const[rnN,setRnN]=useState('');
+  const[col,setCol]=useState({});
+  const[mI,setMI]=useState({});
 
-  var rows=r.meters.map(function(mt,i){
-    var lv=+mt.last||0,cv=+mt.curr||0,diff=cv-lv;
-    var bill=diff>0?(diff*(+mt.rate||0)).toFixed(2):null;
-    var dot=PAL[i%PAL.length];
-    var dc=diff<0?'<span class="ev">'+diff+'⚠</span>':(mt.curr!==''?'<span class="dv">'+diff+' '+mt.unit+'</span>':'<span class="zv">—</span>');
-    var bc=diff<0?'<span class="ev">Err</span>':(bill?'<span class="bv2">₹'+bill+'</span>':'<span class="zv">—</span>');
-    return '<tr>'+
-      '<td><div style="display:flex;align-items:center;gap:5px"><div style="width:5px;height:5px;border-radius:50%;background:'+dot+';flex-shrink:0"></div><div style="font-weight:600">'+mt.name+'</div></div></td>'+
-      '<td><input type="number" value="'+(mt.last||'')+'" placeholder="0" min="0" oninput="updReading(\''+b.id+'\',\''+r.id+'\',\''+mt.id+'\',\'last\',this.value)"></td>'+
-      '<td><input type="number" value="'+(mt.curr||'')+'" placeholder="0" min="0" oninput="updReading(\''+b.id+'\',\''+r.id+'\',\''+mt.id+'\',\'curr\',this.value)"></td>'+
-      '<td id="DC-'+mt.id+'">'+dc+'</td>'+
-      '<td style="color:#8b949e;font-size:.7rem">₹'+mt.rate+'/'+mt.unit+'</td>'+
-      '<td id="BC-'+mt.id+'">'+bc+'</td>'+
-      '<td><button class="btn b-red" style="padding:2px 7px;font-size:.62rem" onclick="delMeter(\''+b.id+'\',\''+r.id+'\',\''+mt.id+'\')">✕</button></td>'+
-    '</tr>';
-  }).join('');
+  const gPS=rid=>PAY[rid]?.[month]||{rent:'unpaid',water:'unpaid'};
+  const togR=rid=>{const ps=gPS(rid);const nv=ps.rent==='paid'?'unpaid':'paid';setPAY(p=>({...p,[rid]:{...p[rid],[month]:{...(p[rid]?.[month]||{rent:'unpaid',water:'unpaid'}),rent:nv}}}));showToast(nv==='paid'?'✅ Rent paid!':'Rent unpaid');};
+  const togW=rid=>{const ps=gPS(rid);const nv=ps.water==='paid'?'unpaid':'paid';setPAY(p=>({...p,[rid]:{...p[rid],[month]:{...(p[rid]?.[month]||{rent:'unpaid',water:'unpaid'}),water:nv}}}));showToast(nv==='paid'?'✅ Water paid!':'Water unpaid');};
+  const updR=(bid,rid,mid,f,v)=>setS(p=>({...p,buildings:p.buildings.map(b=>b.id===bid?{...b,rooms:b.rooms.map(r=>r.id===rid?{...r,meters:r.meters.map(m=>m.id===mid?{...m,[f]:v}:m)}:r)}:b)}));
+  const doAB=()=>{if(!abN.trim()){alert('Enter name');return;}setS(p=>({...p,buildings:[...p.buildings,{id:uid(),name:abN.trim(),rooms:[]}]}));setAbN('');setShowAB(false);showToast('🏢 Building added!');};
+  const doAR=()=>{if(!arD.name.trim()){alert('Enter room number');return;}setS(p=>({...p,buildings:p.buildings.map(b=>b.id===arBid?{...b,rooms:[...b.rooms,{id:uid(),name:arD.name.trim(),tenant:arD.tenant.trim(),rent:+arD.rent||0,deposit:+arD.deposit||0,moveIn:arD.moveIn,meters:[]}]}:b)}));setArD({name:'',tenant:'',rent:'',deposit:'',moveIn:''});setShowAR(false);showToast('🏠 Room added!');};
+  const doSER=()=>{setS(p=>({...p,buildings:p.buildings.map(b=>b.id===erBid?{...b,rooms:b.rooms.map(r=>r.id===erRid?{...r,name:erD.name.trim(),tenant:erD.tenant.trim(),rent:+erD.rent||0,deposit:+erD.deposit||0,moveIn:erD.moveIn}:r)}:b)}));setShowER(false);showToast('✅ Updated!');};
+  const doRN=()=>{if(!rnN.trim())return;setS(p=>({...p,buildings:p.buildings.map(b=>b.id===rnBid?{...b,name:rnN.trim()}:b)}));setShowRN(false);};
+  const doAM=(bid,rid)=>{const k=bid+'_'+rid,v=mI[k]||{};if(!(v.n||'').trim()){alert('Enter meter name');return;}setS(p=>({...p,buildings:p.buildings.map(b=>b.id===bid?{...b,rooms:b.rooms.map(r=>r.id===rid?{...r,meters:[...r.meters,{id:uid(),name:v.n.trim(),unit:v.u||'units',rate:+(v.r)||0,last:'',curr:''}]}:r)}:b)}));setMI(p=>({...p,[k]:{n:'',u:'',r:''}}));showToast('Meter added!');};
+  const delM=(bid,rid,mid)=>setS(p=>({...p,buildings:p.buildings.map(b=>b.id===bid?{...b,rooms:b.rooms.map(r=>r.id===rid?{...r,meters:r.meters.filter(m=>m.id!==mid)}:r)}:b)}));
+  const delR=(bid,rid)=>{if(!confirm('Delete room?'))return;setS(p=>({...p,buildings:p.buildings.map(b=>b.id===bid?{...b,rooms:b.rooms.filter(r=>r.id!==rid)}:b)}));};
+  const delB=bid=>{if(!confirm('Delete building?'))return;setS(p=>({...p,buildings:p.buildings.filter(b=>b.id!==bid)}));};
 
-  var trow=r.meters.length>1?
-    '<tr class="trow"><td colspan="3" style="text-align:right;font-size:.64rem;color:#484f58;padding-right:9px">Water Total →</td><td colspan="2" id="WTR-'+r.id+'" style="color:#58a6ff;text-align:center">₹'+wb.toFixed(2)+'</td><td colspan="2"></td></tr>':'';
+  const copyLastMonth=()=>{
+    const prev_rd=lsGet('pm_r_'+getPK(month));
+    if(!prev_rd){showToast('⚠️ No previous month data found');return;}
+    setS(p=>({...p,buildings:p.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>{const x=prev_rd[r.id]?.[mt.id];return x?{...mt,last:x.curr||'',curr:''}:{...mt,last:'',curr:''};})}))}))}));
+    showToast('✅ Last month readings copied!');
+  };
 
-  div.innerHTML=
-    '<div class="rhdr">' +
-      '<div>' +
-        '<div style="font-weight:700;font-size:.88rem">🏠 Room '+r.name+'</div>' +
-        '<div style="font-size:.7rem;color:#8b949e;margin-top:2px">' +
-          (r.tenant?'<span style="color:#a78bfa">👤 '+r.tenant+'</span>':'<span style="color:#484f58">No tenant</span>')+
-          (r.rent?' &nbsp;·&nbsp; <span style="color:#3fb950;font-weight:600">₹'+r.rent+'/mo</span>':'')+
-          (r.deposit?' &nbsp;·&nbsp; <span style="color:#d29922">🔐 ₹'+r.deposit+'</span>':'')+
-        '</div>' +
-      '</div>' +
-      '<div style="display:flex;align-items:center;gap:7px">' +
-        '<div id="RT-'+r.id+'" style="font-weight:700;color:#58a6ff;font-size:.9rem">'+(tot>0?'₹'+tot.toFixed(2):'—')+'</div>' +
-        '<button class="btn b-ghost b-sm" onclick="openEditRoom(\''+b.id+'\',\''+r.id+'\')">✏️</button>' +
-        '<button class="btn b-red b-sm" onclick="delRoom(\''+b.id+'\',\''+r.id+'\')">🗑</button>' +
-      '</div>' +
-    '</div>' +
-    // Bill summary boxes
-    '<div class="bsum">' +
-      '<div class="bsi"><div class="bl">🏠 Rent</div><div class="bv" style="color:#3fb950" id="RB-'+r.id+'">₹'+(rr>0?rr.toFixed(2):'0')+'</div></div>' +
-      '<div class="bsi"><div class="bl">💧 Water</div><div class="bv" style="color:#58a6ff" id="WB-'+r.id+'">₹'+wb.toFixed(2)+'</div></div>' +
-      '<div class="bsi" style="border:1px solid rgba(88,166,255,.2)"><div class="bl">💰 Total</div><div class="bv" style="color:#e6edf3" id="TB-'+r.id+'">₹'+tot.toFixed(2)+'</div></div>' +
-      '<div class="bsi" style="border:1px solid '+(rPaid&&wPaid?'rgba(63,185,80,.2)':'rgba(248,81,73,.2)')+'"><div class="bl">Status</div><div class="bv" style="font-size:.78rem">'+(rPaid&&wPaid?'✅ Paid':'⚠️ Due')+'</div></div>' +
-    '</div>' +
-    // Meter table
-    (r.meters.length>0?'<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>Meter</th><th>Last Reading</th><th>Current Reading</th><th>Used</th><th>Rate</th><th>Amount</th><th></th></tr></thead><tbody>'+rows+trow+'</tbody></table></div>':'') +
-    // Pay row
-    '<div class="prow">' +
-      '<div style="font-size:.7rem;color:#8b949e">Payment — '+fmt(m)+'</div>' +
-      '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
-        '<button class="pbtn '+(rPaid?'rp':'ru')+'" onclick="togRP(\''+r.id+'\',\''+m+'\')">🏠 Rent '+(rPaid?'✓':'✗')+'</button>' +
-        '<button class="pbtn '+(wPaid?'wp':'wu')+'" onclick="togWP(\''+r.id+'\',\''+m+'\')">💧 Water '+(wPaid?'✓':'✗')+'</button>' +
-        '<button class="btn b-orange b-sm" onclick="genBill(\''+b.id+'\',\''+r.id+'\',\''+b.name+'\')">📄 Bill PDF</button>' +
-      '</div>' +
-    '</div>' +
-    // Add meter
-    '<div class="amrow"><span style="font-size:.7rem;color:#8b949e;font-weight:600">＋ Meter:</span>' +
-      '<input type="text" id="MN-'+r.id+'" placeholder="e.g. Water" style="width:88px">' +
-      '<input type="text" id="MU-'+r.id+'" placeholder="e.g. Litres" style="width:72px">' +
-      '<input type="number" id="MR-'+r.id+'" placeholder="Rate ₹" style="width:62px" step="0.01">' +
-      '<button class="btn b-blue b-sm" onclick="addMeterInline(\''+b.id+'\',\''+r.id+'\')">Add</button>' +
-    '</div>';
-  return div;
+  const iS={background:'#161b22',border:'1px solid #30363d',borderRadius:5,padding:'4px 5px',color:'#e6edf3',fontSize:'.73rem',textAlign:'center',outline:'none',width:68,fontFamily:'inherit'};
+
+  return(
+    <div>
+      {/* Action bar */}
+      <div style={{display:'flex',gap:7,flexWrap:'wrap',marginBottom:14}}>
+        <Btn onClick={()=>{setAbN('');setShowAB(true);}}>＋ Building</Btn>
+        <Btn color="#0d419d" ghost onClick={copyLastMonth} style={{fontSize:'.72rem'}}>⬅ Copy Last Month</Btn>
+        <Btn color="#238636" onClick={()=>exportExcel(S,PAY,allMs,getMS)}>📊 Excel</Btn>
+        <Btn color="#d29922" text="#fff" onClick={()=>exportPDF(S,PAY,allMs,getMS)}>📄 PDF</Btn>
+      </div>
+
+      {!S.buildings.length&&(
+        <div style={{textAlign:'center',padding:'50px 20px',color:'#484f58'}}>
+          <div style={{fontSize:'2.5rem',marginBottom:12}}>🏢</div>
+          <div style={{fontWeight:600,fontSize:'1rem',color:'#8b949e',marginBottom:6}}>No buildings yet</div>
+          <div style={{fontSize:'.82rem'}}>Tap <b style={{color:'#58a6ff'}}>＋ Building</b> above</div>
+        </div>
+      )}
+
+      {S.buildings.map((b,bi)=>{
+        const c=BC[bi%BC.length],bt=b.rooms.reduce((s,r)=>s+rTotal(r),0),isC=col[b.id];
+        return(
+          <div key={b.id} style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,marginBottom:12,overflow:'hidden'}}>
+            <div onClick={()=>setCol(p=>({...p,[b.id]:!p[b.id]}))} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',background:'#0d1117',cursor:'pointer',userSelect:'none'}}>
+              <div style={{display:'flex',alignItems:'center',gap:9}}>
+                <div style={{width:28,height:28,borderRadius:7,background:c.bg,color:c.tx,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.8rem',fontWeight:700}}>{bi+1}</div>
+                <div><div style={{fontWeight:700,fontSize:'.9rem'}}>{b.name}</div><div style={{fontSize:'.65rem',color:'#8b949e',marginTop:1}}>{b.rooms.length} room{b.rooms.length!==1?'s':''}</div></div>
+              </div>
+              <div style={{display:'flex',alignItems:'center',gap:9}}>
+                <div style={{fontWeight:700,color:'#3fb950'}}>{bt>0?'₹'+bt.toFixed(2):'—'}</div>
+                <span style={{color:'#484f58',fontSize:'.7rem',transform:isC?'rotate(-90deg)':'',transition:'.2s',display:'inline-block'}}>▼</span>
+              </div>
+            </div>
+            {!isC&&(
+              <div style={{padding:12}}>
+                {b.rooms.map(r=>{
+                  const wb=wBill(r),rr=+r.rent||0,tot=rr+wb,ps=gPS(r.id),rP=ps.rent==='paid',wP=ps.water==='paid';
+                  return(
+                    <div key={r.id} style={{border:'1px solid #30363d',borderRadius:9,marginBottom:10,overflow:'hidden',background:'#0d1117'}}>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 12px',background:'#161b22',flexWrap:'wrap',gap:6}}>
+                        <div>
+                          <div style={{fontWeight:700,fontSize:'.88rem'}}>🏠 Room {r.name}</div>
+                          <div style={{fontSize:'.7rem',color:'#8b949e',marginTop:2}}>
+                            {r.tenant?<span style={{color:'#a78bfa'}}>👤 {r.tenant}</span>:<span style={{color:'#484f58'}}>No tenant</span>}
+                            {r.rent?<span style={{color:'#3fb950',fontWeight:600}}> · ₹{r.rent}/mo</span>:null}
+                            {r.deposit?<span style={{color:'#d29922'}}> · 🔐 ₹{r.deposit}</span>:null}
+                          </div>
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:7}}>
+                          <div style={{fontWeight:700,color:'#58a6ff',fontSize:'.9rem'}}>{tot>0?'₹'+tot.toFixed(2):'—'}</div>
+                          <Btn sm ghost onClick={()=>{setErBid(b.id);setErRid(r.id);setErD({name:r.name,tenant:r.tenant||'',rent:r.rent||'',deposit:r.deposit||'',moveIn:r.moveIn||''});setShowER(true);}}>✏️</Btn>
+                          <Btn sm danger onClick={()=>delR(b.id,r.id)}>🗑</Btn>
+                        </div>
+                      </div>
+                      {/* Bill summary */}
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:7,padding:'10px 12px',borderBottom:'1px solid #21262d'}}>
+                        {[{l:'🏠 Rent',v:'₹'+(rr>0?rr.toFixed(2):'0'),c:'#3fb950'},{l:'💧 Water',v:'₹'+wb.toFixed(2),c:'#58a6ff'},{l:'💰 Total',v:'₹'+tot.toFixed(2),c:'#e6edf3'},{l:'Status',v:rP&&wP?'✅ Paid':'⚠️ Due',c:rP&&wP?'#3fb950':'#f85149'}].map((x,i)=>(
+                          <div key={i} style={{background:'#0d1117',borderRadius:7,padding:'7px 9px',textAlign:'center',border:i===2?'1px solid rgba(88,166,255,.2)':i===3?`1px solid ${rP&&wP?'rgba(63,185,80,.2)':'rgba(248,81,73,.2)'}`:'none'}}>
+                            <div style={{fontSize:'.58rem',color:'#484f58',fontWeight:700,textTransform:'uppercase',letterSpacing:'.4px',marginBottom:3}}>{x.l}</div>
+                            <div style={{fontSize:'.88rem',fontWeight:700,color:x.c}}>{x.v}</div>
+                          </div>
+                        ))}
+                      </div>
+                      {/* Meter table */}
+                      {r.meters.length>0&&(
+                        <div style={{overflowX:'auto'}}>
+                          <table style={{width:'100%',borderCollapse:'collapse',fontSize:'.73rem',minWidth:420}}>
+                            <thead><tr style={{background:'rgba(255,255,255,.03)'}}>
+                              {['Meter','Last Reading','Current Reading','Used','Rate','Amount',''].map((h,i)=>(
+                                <th key={i} style={{color:'#8b949e',padding:'5px 7px',textAlign:i===0?'left':'center',fontSize:'.58rem',textTransform:'uppercase',fontWeight:700,paddingLeft:i===0?11:7}}>{h}</th>
+                              ))}
+                            </tr></thead>
+                            <tbody>
+                              {r.meters.map((m,mi)=>{
+                                const diff=Math.max(0,(+m.curr||0)-(+m.last||0)),bill=diff>0?(diff*(+m.rate||0)).toFixed(2):null;
+                                return(
+                                  <tr key={m.id} style={{borderBottom:'1px solid rgba(255,255,255,.04)'}}>
+                                    <td style={{padding:'6px 7px 6px 11px'}}><div style={{display:'flex',alignItems:'center',gap:5}}><div style={{width:5,height:5,borderRadius:'50%',background:PAL[mi%PAL.length],flexShrink:0}}></div><div style={{fontWeight:600}}>{m.name}</div></div></td>
+                                    <td style={{padding:'6px 7px',textAlign:'center'}}><input type="number" value={m.last||''} onChange={e=>updR(b.id,r.id,m.id,'last',e.target.value)} placeholder="0" min="0" style={iS}/></td>
+                                    <td style={{padding:'6px 7px',textAlign:'center'}}><input type="number" value={m.curr||''} onChange={e=>updR(b.id,r.id,m.id,'curr',e.target.value)} placeholder="0" min="0" style={iS}/></td>
+                                    <td style={{padding:'6px 7px',textAlign:'center',fontWeight:700,color:diff>0?'#3fb950':'#484f58'}}>{m.curr===''&&m.last===''?'—':diff+' '+m.unit}</td>
+                                    <td style={{padding:'6px 7px',textAlign:'center',color:'#8b949e',fontSize:'.7rem'}}>₹{m.rate}/{m.unit}</td>
+                                    <td style={{padding:'6px 7px',textAlign:'center',fontWeight:700,color:bill?'#58a6ff':'#484f58'}}>{bill?'₹'+bill:'—'}</td>
+                                    <td style={{padding:'6px 7px',textAlign:'center'}}><Btn sm danger onClick={()=>delM(b.id,r.id,m.id)}>✕</Btn></td>
+                                  </tr>
+                                );
+                              })}
+                              {r.meters.length>1&&(
+                                <tr style={{background:'rgba(88,166,255,.06)',borderTop:'1px solid rgba(88,166,255,.15)'}}>
+                                  <td colSpan={3} style={{textAlign:'right',fontSize:'.64rem',color:'#484f58',padding:'6px 9px'}}>Water Total →</td>
+                                  <td colSpan={2} style={{color:'#58a6ff',textAlign:'center',fontWeight:700,padding:'6px 7px'}}>₹{wb.toFixed(2)}</td>
+                                  <td colSpan={2}></td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                      {/* Pay row */}
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',borderTop:'1px solid #21262d',flexWrap:'wrap',gap:6}}>
+                        <div style={{fontSize:'.7rem',color:'#8b949e'}}>Payment — {fmt(month)}</div>
+                        <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+                          <button onClick={()=>togR(r.id)} style={{border:'none',borderRadius:6,padding:'5px 11px',fontSize:'.7rem',fontWeight:700,cursor:'pointer',fontFamily:'inherit',background:rP?'rgba(63,185,80,.15)':'rgba(248,81,73,.1)',color:rP?'#3fb950':'#f85149',borderWidth:1,borderStyle:'solid',borderColor:rP?'rgba(63,185,80,.3)':'rgba(248,81,73,.2)'}}>🏠 Rent {rP?'✓':'✗'}</button>
+                          <button onClick={()=>togW(r.id)} style={{border:'none',borderRadius:6,padding:'5px 11px',fontSize:'.7rem',fontWeight:700,cursor:'pointer',fontFamily:'inherit',background:wP?'rgba(88,166,255,.15)':'rgba(248,81,73,.1)',color:wP?'#58a6ff':'#f85149',borderWidth:1,borderStyle:'solid',borderColor:wP?'rgba(88,166,255,.3)':'rgba(248,81,73,.2)'}}>💧 Water {wP?'✓':'✗'}</button>
+                        </div>
+                      </div>
+                      {/* Add meter */}
+                      <div style={{display:'flex',gap:5,padding:'7px 12px',background:'rgba(255,255,255,.02)',borderTop:'1px dashed #21262d',flexWrap:'wrap',alignItems:'center'}}>
+                        <span style={{fontSize:'.7rem',color:'#8b949e',fontWeight:600}}>＋ Meter:</span>
+                        {[{ph:'Name',k:'n',w:88},{ph:'Unit',k:'u',w:72},{ph:'Rate ₹',k:'r',w:62,type:'number'}].map(f=>(
+                          <input key={f.k} type={f.type||'text'} value={(mI[b.id+'_'+r.id]||{})[f.k]||''} onChange={e=>setMI(p=>({...p,[b.id+'_'+r.id]:{...(p[b.id+'_'+r.id]||{}),[f.k]:e.target.value}}))} placeholder={f.ph}
+                            style={{background:'#0d1117',border:'1px solid #30363d',borderRadius:5,padding:'4px 7px',color:'#e6edf3',fontSize:'.72rem',outline:'none',width:f.w,fontFamily:'inherit'}}/>
+                        ))}
+                        <Btn sm onClick={()=>doAM(b.id,r.id)}>Add</Btn>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div style={{display:'flex',gap:6,marginTop:8,flexWrap:'wrap'}}>
+                  <Btn sm onClick={()=>{setArBid(b.id);setArD({name:'',tenant:'',rent:'',deposit:'',moveIn:''});setShowAR(true);}}>＋ Add Room</Btn>
+                  <Btn sm ghost onClick={()=>{setRnBid(b.id);setRnN(b.name);setShowRN(true);}}>✏️ Rename</Btn>
+                  <Btn sm danger onClick={()=>delB(b.id)}>🗑 Delete</Btn>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      <Modal show={showAB} onClose={()=>setShowAB(false)} title="🏢 Add Building">
+        <FRow label="Building Name"><Inp value={abN} onChange={setAbN} placeholder="e.g. Block A"/></FRow>
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:12}}><Btn ghost onClick={()=>setShowAB(false)}>Cancel</Btn><Btn onClick={doAB}>Add Building</Btn></div>
+      </Modal>
+      <Modal show={showAR} onClose={()=>setShowAR(false)} title="🏠 Add Room">
+        <FRow label="Room Number"><Inp value={arD.name} onChange={v=>setArD(p=>({...p,name:v}))} placeholder="e.g. 101"/></FRow>
+        <FRow label="Tenant Name"><Inp value={arD.tenant} onChange={v=>setArD(p=>({...p,tenant:v}))} placeholder="e.g. Ravi Kumar"/></FRow>
+        <FRow label="Monthly Rent (₹)"><Inp type="number" value={arD.rent} onChange={v=>setArD(p=>({...p,rent:v}))} placeholder="5000"/></FRow>
+        <FRow label="Security Deposit (₹)"><Inp type="number" value={arD.deposit} onChange={v=>setArD(p=>({...p,deposit:v}))} placeholder="10000"/></FRow>
+        <FRow label="Move-in Date"><Inp type="date" value={arD.moveIn} onChange={v=>setArD(p=>({...p,moveIn:v}))}/></FRow>
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:12}}><Btn ghost onClick={()=>setShowAR(false)}>Cancel</Btn><Btn onClick={doAR}>Add Room</Btn></div>
+      </Modal>
+      <Modal show={showER} onClose={()=>setShowER(false)} title="✏️ Edit Room">
+        <FRow label="Room Number"><Inp value={erD.name} onChange={v=>setErD(p=>({...p,name:v}))} placeholder="Room number"/></FRow>
+        <FRow label="Tenant Name"><Inp value={erD.tenant} onChange={v=>setErD(p=>({...p,tenant:v}))} placeholder="Tenant name"/></FRow>
+        <FRow label="Monthly Rent (₹)"><Inp type="number" value={erD.rent} onChange={v=>setErD(p=>({...p,rent:v}))} placeholder="Rent"/></FRow>
+        <FRow label="Security Deposit (₹)"><Inp type="number" value={erD.deposit} onChange={v=>setErD(p=>({...p,deposit:v}))} placeholder="Deposit"/></FRow>
+        <FRow label="Move-in Date"><Inp type="date" value={erD.moveIn} onChange={v=>setErD(p=>({...p,moveIn:v}))}/></FRow>
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:12}}><Btn ghost onClick={()=>setShowER(false)}>Cancel</Btn><Btn onClick={doSER}>Save</Btn></div>
+      </Modal>
+      <Modal show={showRN} onClose={()=>setShowRN(false)} title="✏️ Rename Building">
+        <FRow label="Name"><Inp value={rnN} onChange={setRnN} placeholder="Building name"/></FRow>
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:12}}><Btn ghost onClick={()=>setShowRN(false)}>Cancel</Btn><Btn onClick={doRN}>Save</Btn></div>
+      </Modal>
+    </div>
+  );
 }
 
-function toggleCard(id){var el=ge(id);if(el)el.classList.toggle('cls');}
-
-// OUTSTANDING
-function allMonths(){
-  var ms=[];
-  for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.startsWith('ubm_r_'))ms.push(k.replace('ubm_r_',''));}
-  return ms.sort();
-}
-
-function getMonthState(m){
-  var st=localStorage.getItem('ubm_struct');if(!st)return null;
-  var s;try{s=JSON.parse(st);}catch(e){return null;}
-  var rd=localStorage.getItem('ubm_r_'+m);
-  if(rd){try{var r=JSON.parse(rd);s.buildings.forEach(function(b){b.rooms.forEach(function(rm){rm.meters.forEach(function(mt){var x=r[rm.id]&&r[rm.id][mt.id];mt.last=x?x.last:'';mt.curr=x?x.curr:'';});});});}catch(e){}}
-  return s;
-}
-
-function renderOutstanding(){
-  var ms=allMonths();
-  var rooms=[];S.buildings.forEach(function(b){b.rooms.forEach(function(r){rooms.push({b:b,r:r});});});
-  var totC=0,totD=0,totDep=0;
-  var entries=[];
-
-  rooms.forEach(function(item){
-    var r=item.r,b=item.b,due=0,coll=0,hist=[];
-    ms.forEach(function(m){
-      var sv=getMonthState(m);if(!sv)return;
-      var sb=sv.buildings.find(function(x){return x.id===b.id;});
-      var sr=sb&&sb.rooms.find(function(x){return x.id===r.id;});if(!sr)return;
-      var wb=sr.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-      var rr=+(sr.rent||0);
-      var ps=getPS(r.id,m);
-      var rd2=(ps.rent!=='paid'?rr:0)+(ps.water!=='paid'?wb:0);
-      var rc=(ps.rent==='paid'?rr:0)+(ps.water==='paid'?wb:0);
-      if(rr>0||wb>0){hist.push({m:m,rent:rr,water:wb,total:rr+wb,rp:ps.rent==='paid',wp:ps.water==='paid',due:rd2,coll:rc});due+=rd2;coll+=rc;}
+// ── OUTSTANDING ───────────────────────────────────
+function OutstandingPage({S,PAY,setPAY,allMs,getMS,showToast}){
+  const[open,setOpen]=useState({});
+  const gPS=(rid,m)=>PAY[rid]?.[m]||{rent:'unpaid',water:'unpaid'};
+  const togR=(rid,m)=>{const ps=gPS(rid,m);const nv=ps.rent==='paid'?'unpaid':'paid';setPAY(p=>({...p,[rid]:{...p[rid],[m]:{...(p[rid]?.[m]||{rent:'unpaid',water:'unpaid'}),rent:nv}}}));};
+  const togW=(rid,m)=>{const ps=gPS(rid,m);const nv=ps.water==='paid'?'unpaid':'paid';setPAY(p=>({...p,[rid]:{...p[rid],[m]:{...(p[rid]?.[m]||{rent:'unpaid',water:'unpaid'}),water:nv}}}));};
+  const ms=allMs();
+  const rooms=S.buildings.flatMap(b=>b.rooms.map(r=>({b,r})));
+  let totC=0,totD=0,totDep=0;
+  const entries=rooms.map(({b,r})=>{
+    let due=0,coll=0,hist=[];
+    ms.forEach(m=>{
+      const sv=getMS(m);if(!sv)return;
+      const sb=sv.buildings.find(x=>x.id===b.id);
+      const sr=sb?.rooms.find(x=>x.id===r.id);if(!sr)return;
+      const wb=sr.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
+      const rr=+sr.rent||0,ps=gPS(r.id,m);
+      const rd=(ps.rent!=='paid'?rr:0)+(ps.water!=='paid'?wb:0);
+      const rc=(ps.rent==='paid'?rr:0)+(ps.water==='paid'?wb:0);
+      if(rr>0||wb>0){hist.push({m,rent:rr,water:wb,total:rr+wb,rp:ps.rent==='paid',wp:ps.water==='paid',due:rd,coll:rc});due+=rd;coll+=rc;}
     });
     totC+=coll;totD+=due;totDep+=+(r.deposit||0);
-    if(hist.length>0)entries.push({b:b,r:r,hist:hist,due:due,coll:coll});
-  });
+    return{b,r,hist,due,coll};
+  }).filter(e=>e.hist.length>0).sort((a,b)=>b.due-a.due);
 
-  ge('out-stats').innerHTML=
-    '<div class="sc"><div class="si">✅</div><div class="sv2" style="color:#3fb950">₹'+totC.toFixed(0)+'</div><div class="sl">Collected</div></div>'+
-    '<div class="sc"><div class="si">⚠️</div><div class="sv2" style="color:#f85149">₹'+totD.toFixed(0)+'</div><div class="sl">Outstanding</div></div>'+
-    '<div class="sc"><div class="si">🔐</div><div class="sv2" style="color:#a78bfa">₹'+totDep.toFixed(0)+'</div><div class="sl">Deposits</div></div>'+
-    '<div class="sc"><div class="si">🏠</div><div class="sv2" style="color:#d29922">'+rooms.length+'</div><div class="sl">Rooms</div></div>';
-
-  var cont=ge('out-list');cont.innerHTML='';
-  if(!entries.length){cont.innerHTML='<div style="text-align:center;padding:30px;color:#484f58">No billing history yet</div>';return;}
-  entries.sort(function(a,b){return b.due-a.due;});
-
-  entries.forEach(function(e,i){
-    var ac=PAL[i%PAL.length],um=e.hist.filter(function(h){return h.due>0;}).length;
-    var card=document.createElement('div');card.className='ocard';
-    var rows=e.hist.map(function(h){
-      return '<tr>'+
-        '<td><span style="background:rgba(88,166,255,.1);color:#58a6ff;border-radius:4px;padding:2px 6px;font-weight:700;font-size:.68rem">'+fmtS(h.m)+'</span></td>'+
-        '<td style="text-align:right">₹'+h.rent.toFixed(2)+'</td>'+
-        '<td style="text-align:right">₹'+h.water.toFixed(2)+'</td>'+
-        '<td style="text-align:right;font-weight:700">₹'+h.total.toFixed(2)+'</td>'+
-        '<td><button class="badge '+(h.rp?'paid':'unpaid')+'" onclick="togRP(\''+e.r.id+'\',\''+h.m+'\')">Rent '+(h.rp?'✓':'✗')+'</button></td>'+
-        '<td><button class="badge '+(h.wp?'paid':'unpaid')+'" onclick="togWP(\''+e.r.id+'\',\''+h.m+'\')">Water '+(h.wp?'✓':'✗')+'</button></td>'+
-        '<td style="text-align:right;font-weight:700;color:'+(h.due>0?'#f85149':'#3fb950')+'">'+(h.due>0?'₹'+h.due.toFixed(2):'✓')+'</td>'+
-      '</tr>';
-    }).join('');
-    card.innerHTML=
-      '<div class="ohdr" onclick="toggleCard(\'OC-'+e.r.id+'\')">' +
-        '<div style="display:flex;align-items:center;gap:9px">' +
-          '<div class="oav" style="background:'+ac+'22;color:'+ac+'">'+e.r.name.slice(0,2).toUpperCase()+'</div>' +
-          '<div>' +
-            '<div style="font-weight:700;font-size:.88rem">Room '+e.r.name+'</div>' +
-            '<div style="font-size:.66rem;color:#8b949e;margin-top:2px">'+(e.r.tenant?'<span style="color:#a78bfa">'+e.r.tenant+'</span> · ':'')+e.b.name+' · '+um+' month'+(um!==1?'s':'')+' unpaid</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align:right">' +
-          '<div style="font-weight:700;font-size:.95rem;color:'+(e.due>0?'#f85149':'#3fb950')+'">'+(e.due>0?'₹'+e.due.toFixed(2):'✅ Clear')+'</div>' +
-          '<div style="font-size:.65rem;color:#8b949e;margin-top:1px">₹'+e.coll.toFixed(2)+' collected</div>' +
-          (e.r.deposit?'<div style="font-size:.65rem;color:#a78bfa;margin-top:1px">🔐 ₹'+e.r.deposit+' deposit</div>':'')+
-          '<span class="chev">▼</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="obody" id="OC-'+e.r.id+'" style="display:none">' +
-        (e.r.deposit?'<div class="dep"><div><div style="font-size:.7rem;color:#a78bfa;font-weight:700">🔐 Security Deposit</div><div style="font-size:.65rem;color:#8b949e;margin-top:2px">'+(e.r.moveIn?'Move-in: '+e.r.moveIn:'')+' · Refund on exit</div></div><div style="font-weight:700;color:#a78bfa;font-size:.95rem">₹'+e.r.deposit.toFixed(2)+'</div></div>':'')+
-        '<div style="overflow-x:auto"><table class="otbl">' +
-          '<thead><tr><th>Month</th><th style="text-align:right">Rent</th><th style="text-align:right">Water</th><th style="text-align:right">Total</th><th>Rent</th><th>Water</th><th style="text-align:right">Due</th></tr></thead>' +
-          '<tbody>'+rows+'</tbody>' +
-          '<tfoot><tr style="background:rgba(88,166,255,.06);font-weight:700">' +
-            '<td>Total</td>' +
-            '<td style="text-align:right">₹'+e.hist.reduce(function(s,h){return s+h.rent;},0).toFixed(2)+'</td>' +
-            '<td style="text-align:right">₹'+e.hist.reduce(function(s,h){return s+h.water;},0).toFixed(2)+'</td>' +
-            '<td style="text-align:right">₹'+e.hist.reduce(function(s,h){return s+h.total;},0).toFixed(2)+'</td>' +
-            '<td colspan="2"></td>' +
-            '<td style="text-align:right;color:'+(e.due>0?'#f85149':'#3fb950')+'">₹'+e.due.toFixed(2)+'</td>' +
-          '</tr></tfoot>' +
-        '</table></div>' +
-      '</div>';
-    cont.appendChild(card);
-  });
+  return(
+    <div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))',gap:9,marginBottom:14}}>
+        {[{i:'✅',v:'₹'+totC.toFixed(0),l:'Collected',c:'#3fb950'},{i:'⚠️',v:'₹'+totD.toFixed(0),l:'Outstanding',c:'#f85149'},{i:'🔐',v:'₹'+totDep.toFixed(0),l:'Deposits',c:'#a78bfa'},{i:'🏠',v:rooms.length,l:'Rooms',c:'#d29922'}].map(s=>(
+          <div key={s.l} style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,padding:12}}>
+            <div style={{fontSize:'1.2rem',marginBottom:6}}>{s.i}</div>
+            <div style={{fontSize:'1.2rem',fontWeight:700,color:s.c,lineHeight:1}}>{s.v}</div>
+            <div style={{fontSize:'.65rem',color:'#8b949e',marginTop:3}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+      {!entries.length&&<div style={{textAlign:'center',padding:30,color:'#484f58'}}>No billing history yet. Enter readings and save months.</div>}
+      {entries.map((e,i)=>{
+        const ac=PAL[i%PAL.length],um=e.hist.filter(h=>h.due>0).length,isO=open[e.r.id];
+        return(
+          <div key={e.r.id} style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,marginBottom:9,overflow:'hidden'}}>
+            <div onClick={()=>setOpen(p=>({...p,[e.r.id]:!p[e.r.id]}))} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',cursor:'pointer',flexWrap:'wrap',gap:8}}>
+              <div style={{display:'flex',alignItems:'center',gap:9}}>
+                <div style={{width:34,height:34,borderRadius:'50%',background:ac+'22',color:ac,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.85rem',fontWeight:700,flexShrink:0}}>{e.r.name.slice(0,2).toUpperCase()}</div>
+                <div>
+                  <div style={{fontWeight:700,fontSize:'.88rem'}}>Room {e.r.name}</div>
+                  <div style={{fontSize:'.66rem',color:'#8b949e',marginTop:2}}>{e.r.tenant?<span style={{color:'#a78bfa'}}>{e.r.tenant} · </span>:null}{e.b.name} · {um} month{um!==1?'s':''} unpaid</div>
+                </div>
+              </div>
+              <div style={{textAlign:'right'}}>
+                <div style={{fontWeight:700,fontSize:'.95rem',color:e.due>0?'#f85149':'#3fb950'}}>{e.due>0?'₹'+e.due.toFixed(2):'✅ Clear'}</div>
+                <div style={{fontSize:'.65rem',color:'#8b949e',marginTop:1}}>₹{e.coll.toFixed(2)} collected</div>
+                {e.r.deposit?<div style={{fontSize:'.65rem',color:'#a78bfa',marginTop:1}}>🔐 ₹{e.r.deposit} deposit</div>:null}
+              </div>
+            </div>
+            {isO&&(
+              <div style={{padding:'12px 14px',borderTop:'1px solid #21262d'}}>
+                {e.r.deposit?<div style={{background:'rgba(110,64,201,.08)',border:'1px solid rgba(110,64,201,.25)',borderRadius:8,padding:'9px 12px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between'}}><div style={{fontSize:'.7rem',color:'#a78bfa',fontWeight:700}}>🔐 Security Deposit{e.r.moveIn?' · Move-in: '+e.r.moveIn:''}</div><div style={{fontWeight:700,color:'#a78bfa'}}>₹{e.r.deposit}</div></div>:null}
+                <div style={{overflowX:'auto'}}>
+                  <table style={{width:'100%',borderCollapse:'collapse',fontSize:'.73rem'}}>
+                    <thead><tr style={{background:'#0d1117'}}>
+                      {['Month','Rent','Water','Total','Rent','Water','Due'].map((h,i)=><th key={i} style={{color:'#8b949e',padding:'6px 8px',textAlign:'center',fontSize:'.6rem',textTransform:'uppercase',fontWeight:700,borderBottom:'1px solid #21262d'}}>{h}</th>)}
+                    </tr></thead>
+                    <tbody>
+                      {e.hist.map(h=>(
+                        <tr key={h.m} style={{borderBottom:'1px solid rgba(255,255,255,.04)'}}>
+                          <td style={{padding:'6px 8px',textAlign:'center'}}><span style={{background:'rgba(88,166,255,.1)',color:'#58a6ff',borderRadius:4,padding:'2px 6px',fontWeight:700,fontSize:'.68rem'}}>{fmtS(h.m)}</span></td>
+                          <td style={{textAlign:'right',padding:'6px 8px'}}>₹{h.rent.toFixed(2)}</td>
+                          <td style={{textAlign:'right',padding:'6px 8px'}}>₹{h.water.toFixed(2)}</td>
+                          <td style={{textAlign:'right',padding:'6px 8px',fontWeight:700}}>₹{h.total.toFixed(2)}</td>
+                          <td style={{textAlign:'center',padding:'6px 8px'}}><button onClick={()=>togR(e.r.id,h.m)} style={{border:'none',borderRadius:5,padding:'2px 8px',fontSize:'.66rem',fontWeight:700,cursor:'pointer',fontFamily:'inherit',background:h.rp?'rgba(63,185,80,.12)':'rgba(248,81,73,.12)',color:h.rp?'#3fb950':'#f85149'}}>Rent {h.rp?'✓':'✗'}</button></td>
+                          <td style={{textAlign:'center',padding:'6px 8px'}}><button onClick={()=>togW(e.r.id,h.m)} style={{border:'none',borderRadius:5,padding:'2px 8px',fontSize:'.66rem',fontWeight:700,cursor:'pointer',fontFamily:'inherit',background:h.wp?'rgba(88,166,255,.12)':'rgba(248,81,73,.12)',color:h.wp?'#58a6ff':'#f85149'}}>Water {h.wp?'✓':'✗'}</button></td>
+                          <td style={{textAlign:'right',padding:'6px 8px',fontWeight:700,color:h.due>0?'#f85149':'#3fb950'}}>{h.due>0?'₹'+h.due.toFixed(2):'✓'}</td>
+                        </tr>
+                      ))}
+                      <tr style={{background:'rgba(88,166,255,.06)',fontWeight:700}}>
+                        <td style={{padding:'6px 8px',textAlign:'center'}}>Total</td>
+                        <td style={{textAlign:'right',padding:'6px 8px'}}>₹{e.hist.reduce((s,h)=>s+h.rent,0).toFixed(2)}</td>
+                        <td style={{textAlign:'right',padding:'6px 8px'}}>₹{e.hist.reduce((s,h)=>s+h.water,0).toFixed(2)}</td>
+                        <td style={{textAlign:'right',padding:'6px 8px'}}>₹{e.hist.reduce((s,h)=>s+h.total,0).toFixed(2)}</td>
+                        <td colSpan={2}></td>
+                        <td style={{textAlign:'right',padding:'6px 8px',color:e.due>0?'#f85149':'#3fb950'}}>₹{e.due.toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
-// TENANTS PAGE
-function renderTenants(){
-  var sv=(ge('tSearch')?ge('tSearch').value||'':'').toLowerCase();
-  var rooms=[];S.buildings.forEach(function(b){b.rooms.forEach(function(r){rooms.push({b:b,r:r});});});
-  var ms=allMonths();
-  var cont=ge('tenant-list');cont.innerHTML='';
-  var filtered=rooms.filter(function(item){
-    if(!sv)return true;
-    return(item.r.name||'').toLowerCase().includes(sv)||(item.r.tenant||'').toLowerCase().includes(sv)||(item.b.name||'').toLowerCase().includes(sv);
-  });
-  if(!filtered.length){cont.innerHTML='<div style="text-align:center;padding:28px;color:#484f58">No tenants found</div>';return;}
-  filtered.forEach(function(item,i){
-    var r=item.r,b=item.b,ac=PAL[i%PAL.length];
-    var totDue=0,totColl=0;
-    ms.forEach(function(m){
-      var sv2=getMonthState(m);if(!sv2)return;
-      var sb=sv2.buildings.find(function(x){return x.id===b.id;});
-      var sr=sb&&sb.rooms.find(function(x){return x.id===r.id;});if(!sr)return;
-      var wb=sr.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-      var rr=+(sr.rent||0);var ps=getPS(r.id,m);
-      totDue+=(ps.rent!=='paid'?rr:0)+(ps.water!=='paid'?wb:0);
-      totColl+=(ps.rent==='paid'?rr:0)+(ps.water==='paid'?wb:0);
-    });
-    var card=document.createElement('div');card.className='ocard';
-    card.innerHTML=
-      '<div class="ohdr">' +
-        '<div style="display:flex;align-items:center;gap:9px">' +
-          '<div class="oav" style="background:'+ac+'22;color:'+ac+'">'+r.name.slice(0,2).toUpperCase()+'</div>' +
-          '<div>' +
-            '<div style="font-weight:700;font-size:.88rem">Room '+r.name+'</div>' +
-            '<div style="font-size:.66rem;color:#8b949e;margin-top:2px">'+b.name+(r.moveIn?' · Since '+r.moveIn:'')+'</div>' +
-          '</div>' +
-        '</div>' +
-        '<div style="text-align:right">'+(r.rent?'<div style="color:#3fb950;font-weight:700;font-size:.88rem">₹'+r.rent+'/mo</div>':'')+'</div>' +
-      '</div>' +
-      '<div style="padding:12px 14px;border-top:1px solid #21262d">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">' +
-          '<div class="bsi"><div class="bl">👤 Tenant</div><div style="font-size:.84rem;font-weight:700;color:#e6edf3">'+(r.tenant||'—')+'</div></div>' +
-          '<div class="bsi"><div class="bl">🏠 Monthly Rent</div><div style="font-size:.84rem;font-weight:700;color:#3fb950">₹'+(r.rent||0)+'</div></div>' +
-          '<div class="bsi"><div class="bl">🔐 Security Deposit</div><div style="font-size:.84rem;font-weight:700;color:#a78bfa">₹'+(r.deposit||0)+'</div></div>' +
-          '<div class="bsi"><div class="bl">📅 Move-in</div><div style="font-size:.82rem;font-weight:600;color:#8b949e">'+(r.moveIn||'—')+'</div></div>' +
-          '<div class="bsi"><div class="bl">✅ Collected</div><div style="font-size:.84rem;font-weight:700;color:#3fb950">₹'+totColl.toFixed(2)+'</div></div>' +
-          '<div class="bsi"><div class="bl">⚠️ Outstanding</div><div style="font-size:.84rem;font-weight:700;color:'+(totDue>0?'#f85149':'#3fb950')+'">₹'+totDue.toFixed(2)+'</div></div>' +
-        '</div>' +
-        '<div style="display:flex;gap:7px;flex-wrap:wrap">' +
-          '<button class="btn b-ghost b-sm" onclick="openEditRoom(\''+b.id+'\',\''+r.id+'\')">✏️ Edit</button>' +
-          '<button class="btn b-orange b-sm" onclick="genBill(\''+b.id+'\',\''+r.id+'\',\''+b.name+'\')">📄 Bill PDF</button>' +
-        '</div>' +
-      '</div>';
-    cont.appendChild(card);
-  });
+// ── TENANTS ───────────────────────────────────────
+function TenantsPage({S,PAY,allMs,getMS}){
+  const[search,setSearch]=useState('');
+  const gPS=(rid,m)=>PAY[rid]?.[m]||{rent:'unpaid',water:'unpaid'};
+  const ms=allMs();
+  const rooms=S.buildings.flatMap(b=>b.rooms.map(r=>({b,r})));
+  const filtered=rooms.filter(({b,r})=>{if(!search)return true;return r.name.toLowerCase().includes(search.toLowerCase())||(r.tenant||'').toLowerCase().includes(search.toLowerCase())||b.name.toLowerCase().includes(search.toLowerCase());});
+  return(
+    <div>
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Search…" style={{width:'100%',background:'#161b22',border:'1px solid #30363d',borderRadius:8,padding:'8px 12px',color:'#e6edf3',fontSize:'.78rem',outline:'none',marginBottom:12,fontFamily:'inherit'}}/>
+      {!filtered.length&&<div style={{textAlign:'center',padding:28,color:'#484f58'}}>No tenants found</div>}
+      {filtered.map(({b,r},i)=>{
+        const ac=PAL[i%PAL.length];
+        let totD=0,totC=0;
+        ms.forEach(m=>{const sv=getMS(m);if(!sv)return;const sb=sv.buildings.find(x=>x.id===b.id);const sr=sb?.rooms.find(x=>x.id===r.id);if(!sr)return;const wb=sr.meters.reduce((s,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);const rr=+sr.rent||0,ps=gPS(r.id,m);totD+=(ps.rent!=='paid'?rr:0)+(ps.water!=='paid'?wb:0);totC+=(ps.rent==='paid'?rr:0)+(ps.water==='paid'?wb:0);});
+        return(
+          <div key={r.id} style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,marginBottom:9,overflow:'hidden'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'11px 14px',flexWrap:'wrap',gap:8}}>
+              <div style={{display:'flex',alignItems:'center',gap:9}}>
+                <div style={{width:34,height:34,borderRadius:'50%',background:ac+'22',color:ac,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.85rem',fontWeight:700,flexShrink:0}}>{r.name.slice(0,2).toUpperCase()}</div>
+                <div><div style={{fontWeight:700,fontSize:'.88rem'}}>Room {r.name}</div><div style={{fontSize:'.66rem',color:'#8b949e',marginTop:2}}>{b.name}{r.moveIn?' · Since '+r.moveIn:''}</div></div>
+              </div>
+              {r.rent?<div style={{color:'#3fb950',fontWeight:700,fontSize:'.88rem'}}>₹{r.rent}/mo</div>:null}
+            </div>
+            <div style={{padding:'12px 14px',borderTop:'1px solid #21262d'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+                {[{l:'👤 Tenant',v:r.tenant||'—',c:'#e6edf3'},{l:'🏠 Monthly Rent',v:'₹'+(r.rent||0),c:'#3fb950'},{l:'🔐 Security Deposit',v:'₹'+(r.deposit||0),c:'#a78bfa'},{l:'📅 Move-in Date',v:r.moveIn||'—',c:'#8b949e'},{l:'✅ Total Collected',v:'₹'+totC.toFixed(2),c:'#3fb950'},{l:'⚠️ Outstanding',v:'₹'+totD.toFixed(2),c:totD>0?'#f85149':'#3fb950'}].map(x=>(
+                  <div key={x.l} style={{background:'#0d1117',borderRadius:7,padding:'7px 9px'}}>
+                    <div style={{fontSize:'.58rem',color:'#484f58',fontWeight:700,textTransform:'uppercase',letterSpacing:'.4px',marginBottom:3}}>{x.l}</div>
+                    <div style={{fontSize:'.82rem',fontWeight:700,color:x.c}}>{x.v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
-// DASHBOARD
-function renderDashboard(){
-  var m=curM();
-  ge('dash-title').textContent='📊 Dashboard — '+fmt(m);
-  var rooms=[];S.buildings.forEach(function(b){b.rooms.forEach(function(r){rooms.push({b:b,r:r});});});
-  var tRent=rooms.reduce(function(s,x){return s+(+x.r.rent||0);},0);
-  var tWater=rooms.reduce(function(s,x){return s+waterBill(x.r);},0);
-  var collected=0,due=0;
-  rooms.forEach(function(item){
-    var r=item.r,ps=getPS(r.id,m);
-    if(ps.rent==='paid')collected+=(+r.rent||0);else due+=(+r.rent||0);
-    if(ps.water==='paid')collected+=waterBill(r);else due+=waterBill(r);
-  });
-  ge('dash-stats').innerHTML=
-    '<div class="sc"><div class="si">💰</div><div class="sv2" style="color:#58a6ff">₹'+(tRent+tWater).toFixed(0)+'</div><div class="sl">Total Bill</div></div>'+
-    '<div class="sc"><div class="si">✅</div><div class="sv2" style="color:#3fb950">₹'+collected.toFixed(0)+'</div><div class="sl">Collected</div></div>'+
-    '<div class="sc"><div class="si">⚠️</div><div class="sv2" style="color:#f85149">₹'+due.toFixed(0)+'</div><div class="sl">Pending</div></div>'+
-    '<div class="sc"><div class="si">🏠</div><div class="sv2" style="color:#d29922">'+rooms.length+'</div><div class="sl">Rooms</div></div>';
-  var ms=allMonths().slice(-8);
-  var mxV=1;
-  var mdata=ms.map(function(mo){
-    var sv=getMonthState(mo);if(!sv)return{l:fmtS(mo),v:0};
-    var tot=sv.buildings.reduce(function(s,b){return s+b.rooms.reduce(function(s2,r){
-      var wb=r.meters.reduce(function(s3,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s3+d*(+mt.rate||0);},0);
-      return s2+(+r.rent||0)+wb;
-    },0);},0);
-    if(tot>mxV)mxV=tot;
-    return{l:fmtS(mo),v:tot};
-  });
-  ge('dash-chart').innerHTML=mdata.map(function(d,i){
-    var h=Math.max(3,d.v/mxV*78);
-    return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end">'+
-      '<div style="font-size:.54rem;color:#8b949e;font-weight:600">'+(d.v>999?(d.v/1000).toFixed(1)+'k':d.v.toFixed(0))+'</div>'+
-      '<div style="width:100%;height:'+h+'px;background:'+PAL[i%PAL.length]+';border-radius:4px 4px 0 0"></div>'+
-      '<div style="font-size:.54rem;color:#484f58;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">'+d.l+'</div>'+
-    '</div>';
-  }).join('');
+// ── DASHBOARD ─────────────────────────────────────
+function DashboardPage({S,PAY,month,allMs,getMS}){
+  const gPS=(rid,m)=>PAY[rid]?.[m]||{rent:'unpaid',water:'unpaid'};
+  const rooms=S.buildings.flatMap(b=>b.rooms.map(r=>({b,r})));
+  const tBill=rooms.reduce((s,{r})=>s+rTotal(r),0);
+  let coll=0,due=0;
+  rooms.forEach(({r})=>{const ps=gPS(r.id,month);if(ps.rent==='paid')coll+=(+r.rent||0);else due+=(+r.rent||0);if(ps.water==='paid')coll+=wBill(r);else due+=wBill(r);});
+  const ms=allMs().slice(-8);
+  const mdata=ms.map(m=>{const sv=getMS(m);if(!sv)return{l:fmtS(m),v:0};const tot=sv.buildings.reduce((s,b)=>s+b.rooms.reduce((s2,r)=>{const wb=r.meters.reduce((s3,mt)=>{const d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s3+d*(+mt.rate||0);},0);return s2+(+r.rent||0)+wb;},0),0);return{l:fmtS(m),v:tot};});
+  const mxV=Math.max(...mdata.map(d=>d.v),1);
+  const topR=rooms.map(({b,r})=>({bldg:b.name,room:r,bill:rTotal(r)})).sort((a,b)=>b.bill-a.bill).slice(0,5);
+  const mxR=Math.max(...topR.map(h=>h.bill),1);
+  return(
+    <div>
+      <div style={{fontWeight:700,marginBottom:12}}>📊 Dashboard — {fmt(month)}</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))',gap:9,marginBottom:14}}>
+        {[{i:'💰',v:'₹'+tBill.toFixed(0),l:'Total Bill',c:'#58a6ff'},{i:'✅',v:'₹'+coll.toFixed(0),l:'Collected',c:'#3fb950'},{i:'⚠️',v:'₹'+due.toFixed(0),l:'Pending',c:'#f85149'},{i:'🏠',v:rooms.length,l:'Rooms',c:'#d29922'}].map(s=>(
+          <div key={s.l} style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,padding:12}}>
+            <div style={{fontSize:'1.2rem',marginBottom:6}}>{s.i}</div>
+            <div style={{fontSize:'1.2rem',fontWeight:700,color:s.c,lineHeight:1}}>{s.v}</div>
+            <div style={{fontSize:'.65rem',color:'#8b949e',marginTop:3}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,padding:13,marginBottom:11}}>
+        <div style={{fontSize:'.8rem',fontWeight:700,marginBottom:11}}>💰 Monthly Collection Trend</div>
+        {ms.length===0?<div style={{color:'#484f58',fontSize:'.76rem',textAlign:'center',padding:12}}>Save data for multiple months to see trend</div>:(
+          <div style={{display:'flex',alignItems:'flex-end',gap:5,height:90,paddingBottom:16}}>
+            {mdata.map((d,i)=>{const h=Math.max(3,d.v/mxV*78);return(
+              <div key={d.l} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,height:'100%',justifyContent:'flex-end'}}>
+                <div style={{fontSize:'.54rem',color:'#8b949e',fontWeight:600}}>{d.v>999?(d.v/1000).toFixed(1)+'k':d.v.toFixed(0)}</div>
+                <div style={{width:'100%',height:h,background:PAL[i%PAL.length],borderRadius:'4px 4px 0 0'}}></div>
+                <div style={{fontSize:'.54rem',color:'#484f58',textAlign:'center',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'100%'}}>{d.l}</div>
+              </div>
+            );})}
+          </div>
+        )}
+      </div>
+      {topR.length>0&&(
+        <div style={{background:'#161b22',border:'1px solid #21262d',borderRadius:10,padding:13}}>
+          <div style={{fontSize:'.8rem',fontWeight:700,marginBottom:11}}>🏆 Top Rooms by Bill</div>
+          {topR.map((h,i)=>(
+            <div key={h.room.id} style={{display:'flex',alignItems:'center',gap:7,padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,.04)'}}>
+              <div style={{width:19,height:19,borderRadius:'50%',background:PAL[i]+'22',color:PAL[i],display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.62rem',fontWeight:700}}>{i+1}</div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:'.76rem',fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>Room {h.room.name} <span style={{color:'#484f58',fontSize:'.66rem'}}>{h.bldg}</span></div>
+                <div style={{background:'#21262d',borderRadius:2,height:4,marginTop:3}}><div style={{width:(h.bill/mxR*100).toFixed(1)+'%',background:PAL[i],borderRadius:2,height:4}}></div></div>
+              </div>
+              <div style={{fontWeight:700,fontSize:'.8rem',color:PAL[i]}}>₹{h.bill.toFixed(0)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {!rooms.length&&<div style={{textAlign:'center',padding:'40px 20px',color:'#484f58'}}>Add buildings and rooms to see dashboard</div>}
+    </div>
+  );
 }
 
-// PDF BILL
-function genBill(bid,rid,bn){
-  var b=S.buildings.find(function(x){return x.id===bid;});
-  var r=b&&b.rooms.find(function(x){return x.id===rid;});if(!r)return;
-  var m=curM(),ml=fmt(m);
-  var date=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-  var inv='INV-'+rid.slice(1,6).toUpperCase()+'-'+m.replace('-','');
-  var wb=waterBill(r),rr=+(r.rent||0),tot=rr+wb;
-  var ps=getPS(r.id,m),rPaid=ps.rent==='paid',wPaid=ps.water==='paid',allPaid=rPaid&&wPaid;
+// ── MAIN APP ──────────────────────────────────────
+export default function App(){
+  const[month,setMonth]=useState(DEF_M);
+  const[page,setPage]=useState('b');
+  const[S,setS]=useState({buildings:[]});
+  const[PAY,setPAY]=useState({});
+  const[toastMsg,setToastMsg]=useState('');
+  const[saved,setSaved]=useState(false);
 
-  var mRows=r.meters.map(function(mt){
-    var prev=+mt.last||0,curr=+mt.curr||0,diff=Math.max(0,curr-prev),bill=diff*(+mt.rate||0);
-    return '<tr style="border-bottom:1px solid #f1f5f9">'+
-      '<td style="padding:9px 12px;font-weight:600;font-size:12px">💧 '+mt.name+'</td>'+
-      '<td style="text-align:center;padding:9px 6px;color:#475569;font-size:12px">'+prev+'</td>'+
-      '<td style="text-align:center;padding:9px 6px;color:#475569;font-size:12px">'+curr+'</td>'+
-      '<td style="text-align:center;padding:9px 6px;font-weight:700;color:#0f4c81;font-size:12px">'+diff+' '+mt.unit+'</td>'+
-      '<td style="text-align:center;padding:9px 6px;color:#64748b;font-size:11px">₹'+mt.rate+'/'+mt.unit+'</td>'+
-      '<td style="text-align:right;padding:9px 12px;font-weight:700;color:#0f6b3a;font-size:13px">₹'+bill.toFixed(2)+'</td>'+
-    '</tr>';
-  }).join('');
+  const showToast=useCallback(msg=>{setToastMsg(msg);setTimeout(()=>setToastMsg(''),3000);},[]);
 
-  // Previous outstanding
-  var ms2=allMonths(),outRows='',totOut=0;
-  ms2.forEach(function(mo){
-    if(mo===m)return;
-    var sv=getMonthState(mo);if(!sv)return;
-    var sb=sv.buildings.find(function(x){return x.id===bid;});
-    var sr=sb&&sb.rooms.find(function(x){return x.id===rid;});if(!sr)return;
-    var swb=sr.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-    var srr=+(sr.rent||0),ps2=getPS(r.id,mo);
-    var d2=(ps2.rent!=='paid'?srr:0)+(ps2.water!=='paid'?swb:0);
-    if(d2>0){totOut+=d2;outRows+='<tr style="border-bottom:1px solid #fee2e2"><td style="padding:6px 10px;font-size:11px">'+fmtS(mo)+'</td><td style="text-align:right;padding:6px 10px;font-size:11px">'+(ps2.rent!=='paid'?'₹'+srr.toFixed(2):'<span style="color:#16a34a">✓</span>')+'</td><td style="text-align:right;padding:6px 10px;font-size:11px">'+(ps2.water!=='paid'?'₹'+swb.toFixed(2):'<span style="color:#16a34a">✓</span>')+'</td><td style="text-align:right;padding:6px 10px;font-weight:700;color:#991b1b;font-size:12px">₹'+d2.toFixed(2)+'</td></tr>';}
-  });
-
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bill – Room '+r.name+'</title>'+
-    '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Segoe UI",Arial,sans-serif;background:#f8fafc}.page{max-width:480px;margin:0 auto;background:#fff;min-height:100vh}'+
-    '.hdr{background:linear-gradient(135deg,#0f2744,#1e4d8c);padding:22px 20px 16px;color:#fff}'+
-    '.sb{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:'+(allPaid?'#dcfce7':'#fef2f2')+';border-bottom:1px solid '+(allPaid?'#bbf7d0':'#fecaca')+'}'+
-    '.sp{display:flex;align-items:center;gap:5px;font-weight:800;font-size:12px;color:'+(allPaid?'#166534':'#991b1b')+'}'+
-    '.sec{padding:12px 18px;border-bottom:1px solid #f1f5f9}'+
-    '.stl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:7px}'+
-    '.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}'+
-    '.ib{background:#f8fafc;border-radius:7px;padding:8px 10px;border:1px solid #e2e8f0}'+
-    '.il{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:2px}'+
-    '.iv{font-size:12px;font-weight:700;color:#1e293b}'+
-    '.bboxes{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 18px;background:#f8fafc;border-bottom:1px solid #e2e8f0}'+
-    '.bb{background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #e2e8f0}'+
-    '.bb-l{font-size:9px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-bottom:3px}'+
-    '.bb-v{font-size:18px;font-weight:800}'+
-    'table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0}'+
-    'th{background:#f1f5f9;padding:7px 6px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;color:#64748b}'+
-    'th:first-child{text-align:left;padding-left:12px}th:last-child{text-align:right;padding-right:12px}'+
-    '.tbox{margin:12px 18px;background:linear-gradient(135deg,#0f2744,#1e4d8c);border-radius:10px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:#fff}'+
-    '.out{margin:0 18px 12px;background:#fff7f7;border:1px solid #fecaca;border-radius:8px;overflow:hidden}'+
-    '.out-t{background:#fee2e2;padding:7px 11px;font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.5px}'+
-    '.ft{margin:12px 18px 20px;text-align:center;border-top:1px solid #f1f5f9;padding-top:9px;font-size:10px;color:#94a3b8}'+
-    '@media print{body{background:#fff}.page{max-width:100%}}</style></head>'+
-    '<body><div class="page">'+
-    '<div class="hdr"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><div style="font-size:17px;font-weight:800">🏢 Property<span style="color:#60a5fa">Manager</span></div><div style="background:rgba(255,255,255,.15);border-radius:5px;padding:2px 8px;font-size:9px;font-weight:700;color:#93c5fd">'+inv+'</div></div><div style="font-size:22px;font-weight:800;margin-bottom:3px">Room '+r.name+'</div><div style="font-size:11px;color:#93c5fd">'+bn+'</div></div>'+
-    '<div class="sb"><div class="sp"><div style="width:7px;height:7px;border-radius:50%;background:'+(allPaid?'#22c55e':'#ef4444')+';margin-right:3px"></div>'+(allPaid?'✅ FULLY PAID':'⚠️ PAYMENT PENDING')+'</div><div style="font-size:10px;color:#64748b">📅 '+date+'</div></div>'+
-    '<div class="sec"><div class="stl">Tenant Information</div><div class="igrid">'+
-      '<div class="ib"><div class="il">👤 Tenant</div><div class="iv">'+(r.tenant||'—')+'</div></div>'+
-      '<div class="ib"><div class="il">📅 Period</div><div class="iv">'+ml+'</div></div>'+
-      '<div class="ib"><div class="il">🏠 Monthly Rent</div><div class="iv" style="color:#16a34a">₹'+rr.toFixed(2)+'</div></div>'+
-      '<div class="ib"><div class="il">🔐 Security Deposit</div><div class="iv" style="color:#7c3aed">₹'+(r.deposit||0)+'</div></div>'+
-    '</div></div>'+
-    '<div class="bboxes">'+
-      '<div class="bb"><div class="bb-l">🏠 Rent</div><div class="bb-v" style="color:'+(rPaid?'#16a34a':'#dc2626')+'">₹'+rr.toFixed(2)+'</div><div style="font-size:9px;margin-top:3px;color:'+(rPaid?'#16a34a':'#dc2626')+'">'+(rPaid?'✓ Paid':'✗ Unpaid')+'</div></div>'+
-      '<div class="bb"><div class="bb-l">💧 Water</div><div class="bb-v" style="color:'+(wPaid?'#16a34a':'#dc2626')+'">₹'+wb.toFixed(2)+'</div><div style="font-size:9px;margin-top:3px;color:'+(wPaid?'#16a34a':'#dc2626')+'">'+(wPaid?'✓ Paid':'✗ Unpaid')+'</div></div>'+
-    '</div>'+
-    (r.meters.length>0?'<div class="sec"><div class="stl">💧 Water Meter Readings</div><table><thead><tr><th>Meter</th><th>Prev</th><th>Curr</th><th>Used</th><th>Rate</th><th>Amount</th></tr></thead><tbody>'+mRows+'</tbody></table></div>':'')+
-    '<div class="tbox"><div><div style="font-size:11px;color:#93c5fd;margin-bottom:2px">Total Bill — '+ml+'</div><div style="font-size:26px;font-weight:800">₹'+tot.toFixed(2)+'</div><div style="font-size:10px;color:#60a5fa;margin-top:2px">Rent ₹'+rr.toFixed(2)+' + Water ₹'+wb.toFixed(2)+'</div></div><div style="font-size:30px;opacity:.25">'+(allPaid?'✅':'💳')+'</div></div>'+
-    (!allPaid?'<div style="margin:12px 18px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;display:flex;gap:8px"><div style="font-size:16px;flex-shrink:0">💡</div><div style="font-size:11px;line-height:1.5;color:#92400e">Please pay <b>₹'+tot.toFixed(2)+'</b> for <b>'+ml+'</b>.'+(totOut>0?' You also have outstanding dues of <b>₹'+totOut.toFixed(2)+'</b> from previous months.':'')+'</div></div>':'')+
-    (totOut>0?'<div class="out"><div class="out-t">⚠️ Previous Outstanding — ₹'+totOut.toFixed(2)+'</div><table style="border:none"><thead><tr style="background:#fee2e2"><th style="text-align:left;padding-left:10px">Month</th><th style="text-align:right">Rent</th><th style="text-align:right">Water</th><th style="text-align:right">Due</th></tr></thead><tbody>'+outRows+'</tbody><tfoot><tr style="background:#fee2e2;font-weight:700"><td style="padding:6px 10px;font-size:11px">Total Outstanding</td><td colspan="2"></td><td style="padding:6px 10px;text-align:right;color:#991b1b;font-size:13px">₹'+totOut.toFixed(2)+'</td></tr></tfoot></table></div>':'')+
-    '<div class="ft">Generated by PropertyManager · '+date+'<br><span style="color:#cbd5e1">'+inv+'</span></div>'+
-    '</div></body></html>';
-
-  var w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();
-  setTimeout(function(){w.print();},600);
-  toast('📄 Bill PDF ready → Save → WhatsApp');
-}
-
-// EXCEL
-function doExcel(){
-  if(typeof XLSX==='undefined'){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=doExcel;document.head.appendChild(s);toast('⏳ Loading…');return;}
-  var wb=XLSX.utils.book_new(),ms=allMonths();
-  function H(v,bg){return{v:v,t:'s',s:{font:{bold:true,color:{rgb:'FFFFFF'},sz:10},fill:{fgColor:{rgb:bg||'1F3A5F'}},alignment:{horizontal:'center'}}};}
-  function T(v){return{v:v||'',t:'s',s:{font:{sz:10}}};}
-  function M(v){return{v:+v||0,t:'n',s:{numFmt:'#,##0.00',font:{color:{rgb:'166534'},sz:10},alignment:{horizontal:'right'}}};}
-
-  // Monthly bills sheet
-  var rows=[[H('PROPERTY MANAGER — MONTHLY BILLS','0F2744'),'','','','','','','',''],[''],
-    [H('Month'),H('Building'),H('Room'),H('Tenant'),H('Rent'),H('Water'),H('Total'),H('Rent Status'),H('Water Status')]];
-  ms.forEach(function(m){
-    var sv=getMonthState(m);if(!sv)return;
-    sv.buildings.forEach(function(b){b.rooms.forEach(function(r){
-      var wb=r.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-      var rr=+(r.rent||0),ps=getPS(r.id,m);
-      rows.push([T(fmt(m)),T(b.name),T(r.name),T(r.tenant||''),M(rr),M(wb),M(rr+wb),T(ps.rent==='paid'?'✓ Paid':'✗ Unpaid'),T(ps.water==='paid'?'✓ Paid':'✗ Unpaid')]);
-    });});
-    rows.push([]);
-  });
-  var ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:18},{wch:14},{wch:10},{wch:18},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12}];
-  XLSX.utils.book_append_sheet(wb,ws,'Monthly Bills');
-
-  // Outstanding sheet
-  var oRows=[[H('OUTSTANDING & DEPOSITS','0F2744'),'','','',''],[''],
-    [H('Building'),H('Room'),H('Tenant'),H('Monthly Rent'),H('Security Deposit'),H('Total Outstanding')]];
-  S.buildings.forEach(function(b){b.rooms.forEach(function(r){
-    var due=0;
-    ms.forEach(function(m){
-      var sv=getMonthState(m);if(!sv)return;
-      var sb=sv.buildings.find(function(x){return x.id===b.id;});
-      var sr=sb&&sb.rooms.find(function(x){return x.id===r.id;});if(!sr)return;
-      var wb=sr.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-      var ps=getPS(r.id,m);
-      due+=(ps.rent!=='paid'?+(sr.rent||0):0)+(ps.water!=='paid'?wb:0);
-    });
-    oRows.push([T(b.name),T(r.name),T(r.tenant||''),M(r.rent||0),M(r.deposit||0),M(due)]);
-  });});
-  var ws2=XLSX.utils.aoa_to_sheet(oRows);ws2['!cols']=[{wch:14},{wch:10},{wch:18},{wch:14},{wch:16},{wch:16}];
-  XLSX.utils.book_append_sheet(wb,ws2,'Outstanding');
-
-  XLSX.writeFile(wb,'PropertyManager_'+new Date().toISOString().slice(0,10)+'.xlsx');
-  toast('✅ Excel downloaded!');
-}
-
-// PDF ALL
-function doPDF(){
-  var ms=allMonths();if(!ms.length){toast('⚠️ No data');return;}
-  var now=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Property Report</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:11px;color:#000;background:#fff}.cov{padding:34px;text-align:center;page-break-after:always}.cov h1{font-size:22px;color:#1e3a5f}.ms{padding:14px 18px;page-break-after:always}.mt{background:#1e3a5f;color:#fff;padding:7px 13px;font-size:12px;font-weight:bold}.sr{display:flex;gap:7px;margin:9px 0}.sb{flex:1;border:1px solid #ddd;border-radius:4px;padding:7px;text-align:center}.v{font-size:14px;font-weight:bold;color:#1e3a5f}.l{font-size:9px;color:#666}table{width:100%;border-collapse:collapse;margin-bottom:11px;font-size:10px}th{background:#1e3a5f;color:#fff;padding:5px 6px;text-align:left}td{padding:4px 6px;border-bottom:1px solid #eee}tr:nth-child(even) td{background:#f8fafc}.paid{color:#166534;font-weight:bold}.unpaid{color:#991b1b;font-weight:bold}.ra{text-align:right;font-weight:bold}.ft{font-size:9px;color:#aaa;text-align:center;border-top:1px solid #eee;padding:4px;margin-top:3px}@media print{.ms{page-break-after:always}}</style></head><body>';
-  html+='<div class="cov"><h1>🏢 Property Manager Report</h1><p>'+now+' · '+ms.length+' months</p></div>';
-  ms.forEach(function(m){
-    var sv=getMonthState(m);if(!sv)return;
-    var tR=0,tW=0,pc=0,uc=0;
-    sv.buildings.forEach(function(b){b.rooms.forEach(function(r){
-      var wb=r.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-      tR+=(+r.rent||0);tW+=wb;var ps=getPS(r.id,m);
-      if(ps.rent==='paid'&&ps.water==='paid')pc++;else uc++;
-    });});
-    html+='<div class="ms"><div class="mt">📅 '+fmt(m)+'</div><div class="sr"><div class="sb"><div class="v">₹'+(tR+tW).toFixed(2)+'</div><div class="l">Total</div></div><div class="sb"><div class="v">₹'+tR.toFixed(2)+'</div><div class="l">Rent</div></div><div class="sb"><div class="v">₹'+tW.toFixed(2)+'</div><div class="l">Water</div></div><div class="sb"><div class="v" style="color:#166534">'+pc+'</div><div class="l">Paid</div></div><div class="sb"><div class="v" style="color:#991b1b">'+uc+'</div><div class="l">Unpaid</div></div></div>';
-    sv.buildings.forEach(function(b){
-      html+='<div style="font-weight:bold;font-size:10px;color:#555;margin:7px 0 3px">🏢 '+b.name+'</div><table><thead><tr><th>Room</th><th>Tenant</th><th class="ra">Rent</th><th class="ra">Water</th><th class="ra">Total</th><th>Rent</th><th>Water</th></tr></thead><tbody>';
-      b.rooms.forEach(function(r){
-        var wb=r.meters.reduce(function(s,mt){var d=Math.max(0,(+mt.curr||0)-(+mt.last||0));return s+d*(+mt.rate||0);},0);
-        var rr=+(r.rent||0),ps=getPS(r.id,m);
-        html+='<tr><td>'+r.name+'</td><td>'+(r.tenant||'—')+'</td><td class="ra">₹'+rr.toFixed(2)+'</td><td class="ra">₹'+wb.toFixed(2)+'</td><td class="ra">₹'+(rr+wb).toFixed(2)+'</td><td class="'+(ps.rent==='paid'?'paid':'unpaid')+'">'+(ps.rent==='paid'?'✓ Paid':'✗ Unpaid')+'</td><td class="'+(ps.water==='paid'?'paid':'unpaid')+'">'+(ps.water==='paid'?'✓ Paid':'✗ Unpaid')+'</td></tr>';
-      });
-      html+='</tbody></table>';
-    });
-    html+='<div class="ft">PropertyManager · '+fmt(m)+'</div></div>';
-  });
-  html+='</body></html>';
-  var w=window.open('','_blank');w.document.write(html);w.document.close();w.focus();
-  setTimeout(function(){w.print();},700);toast('📄 PDF ready');
-}
-
-function connectSyncCode(){
-  var code = ge('syncCodeInput').value.trim();
-  if(!code){alert('Enter sync code');return;}
-  localStorage.setItem('pm_bin_id', code);
-  closeModal('syncCodeModal');
-  toast('🔄 Connecting...');
-  loadFromCloud();
-}
-
-// INIT
-(function(){
-  var st=localStorage.getItem('ubm_struct');if(st){try{S=JSON.parse(st);}catch(e){}}
-  var py=localStorage.getItem('ubm_pay');if(py){try{PAY=JSON.parse(py);}catch(e){}}
-  var now2=new Date();
-  var defM=now2.getFullYear()+'-'+String(now2.getMonth()+1).padStart(2,'0');
-  var savedM=localStorage.getItem('ubm_month')||defM;
-  ge('MP').value=savedM;lastM=savedM;
-  var rd=localStorage.getItem('ubm_r_'+savedM);
-  if(rd){try{var r=JSON.parse(rd);S.buildings.forEach(function(b){b.rooms.forEach(function(rm){rm.meters.forEach(function(mt){var x=r[rm.id]&&r[rm.id][mt.id];mt.last=x?x.last:'';mt.curr=x?x.curr:'';});});});}catch(e){}}
-  // Show data if local exists, else show loading
-  if(S.buildings&&S.buildings.length>0){
-    renderBilling();
-  } else {
-    ge('BL').innerHTML='<div style="text-align:center;padding:60px 20px;color:#484f58"><div style="font-size:2.5rem;margin-bottom:12px">☁️</div><div style="font-weight:600;font-size:1rem;color:#8b949e;margin-bottom:8px">Loading your data...</div><div style="font-size:.78rem">Connecting to cloud, please wait</div></div>';
-  }
-
-  // ── CLOUD SYNC via JSONBin (free, reliable) ────────
-  // Uses a fixed bin ID so both phones share same data
-  var BIN_ID = ''; // will be created on first save
-  var API_KEY = '$2a$10$mK8vYjQr9LmN2pX4wZ6uEeH7vF3dA1sC5nG8tL0qR2yB9kW1mP7oJ';
-  var HEADERS = {
-    'Content-Type': 'application/json',
-    'X-Master-Key': API_KEY,
-    'X-Access-Key': API_KEY
-  };
-
-  function getBinId(){
-    return localStorage.getItem('pm_bin_id')||'';
-  }
-
-  window.syncCloud = function(){
-    var payload = {
-      struct: JSON.stringify(S),
-      pay: JSON.stringify(PAY),
-      month: ge('MP').value,
-      ts: Date.now()
-    };
-    // Save all monthly readings
-    for(var i=0;i<localStorage.length;i++){
-      var k=localStorage.key(i);
-      if(k&&k.startsWith('ubm_r_')) payload[k]=localStorage.getItem(k);
-    }
-
-    var bid = getBinId();
-    if(!bid){
-      // Create new bin
-      fetch('https://api.jsonbin.io/v3/b', {
-        method: 'POST',
-        headers: Object.assign({'X-Bin-Name':'PropertyManager','X-Bin-Private':'false'}, HEADERS),
-        body: JSON.stringify(payload)
-      }).then(function(r){return r.json();}).then(function(d){
-        if(d.metadata&&d.metadata.id){
-          var newBid = d.metadata.id;
-          localStorage.setItem('pm_bin_id', newBid);
-          ge('savedTxt').textContent='✅ Saved to cloud! Share code: '+newBid;
-          ge('savedTxt').classList.add('on');
-          setTimeout(function(){ge('savedTxt').classList.remove('on');},4000);
+  useEffect(()=>{
+    // 1. Load from localStorage immediately (instant)
+    const st=lsGet('pm_s');
+    const py=lsGet('pm_p');
+    const m=localStorage.getItem('pm_month');
+    if(st){
+      let loaded=st;
+      if(m){
+        const rd=lsGet('pm_r_'+m);
+        if(rd){
+          loaded={...st,buildings:st.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>{const x=rd[r.id]?.[mt.id];return x?{...mt,last:x.last||'',curr:x.curr||''}:{...mt};})}))}))};
         }
-      }).catch(function(){});
-    } else {
-      // Update existing bin
-      fetch('https://api.jsonbin.io/v3/b/'+bid, {
-        method: 'PUT',
-        headers: HEADERS,
-        body: JSON.stringify(payload)
-      }).then(function(){
-        ge('savedTxt').textContent='✅ Saved & Synced';
-        ge('savedTxt').classList.add('on');
-        setTimeout(function(){ge('savedTxt').classList.remove('on');},2000);
-      }).catch(function(){});
+      }
+      setS(loaded);
     }
+    if(py)setPAY(py);
+    if(m)setMonth(m);
+
+    // 2. Pull from Google Sheets (may have newer data from other phone)
+    pullFromSheets().then(cloud=>{
+      if(!cloud)return;
+      const localTs=parseInt(localStorage.getItem('pm_ts')||'0');
+      // Use cloud if: local is empty OR cloud is newer
+      const localEmpty=!st||!st.buildings||st.buildings.length===0;
+      if(localEmpty||(cloud.ts&&cloud.ts>localTs)){
+        try{
+          const cs=JSON.parse(cloud.s);
+          const cp=cloud.p?JSON.parse(cloud.p):{};
+          // Restore all monthly readings
+          if(cloud.rd){Object.keys(cloud.rd).forEach(k=>localStorage.setItem(k,cloud.rd[k]));}
+          lsSet('pm_s',cs);lsSet('pm_p',cp);
+          if(cloud.month){localStorage.setItem('pm_month',cloud.month);setMonth(cloud.month);}
+          if(cloud.ts)localStorage.setItem('pm_ts',cloud.ts);
+          // Apply readings for current month
+          const cm=cloud.month||m||DEF_M;
+          const rd=lsGet('pm_r_'+cm);
+          if(rd){
+            const loaded={...cs,buildings:cs.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>{const x=rd[r.id]?.[mt.id];return x?{...mt,last:x.last||'',curr:x.curr||''}:{...mt};})}))}))};
+            setS(loaded);
+          }else{setS(cs);}
+          setPAY(cp);
+          showToast('☁️ Data loaded from cloud!');
+        }catch(e){}
+      }
+    });
+  },[]);
+
+  // Auto-save to localStorage AND Google Sheets
+  useEffect(()=>{
+    const t=setTimeout(()=>{
+      lsSet('pm_s',S);
+      lsSet('pm_p',PAY);
+      localStorage.setItem('pm_month',month);
+      const rd={};
+      S.buildings.forEach(b=>b.rooms.forEach(r=>r.meters.forEach(mt=>{if(!rd[r.id])rd[r.id]={};rd[r.id][mt.id]={last:mt.last||'',curr:mt.curr||''};})));
+      lsSet('pm_r_'+month,rd);
+      if(S.buildings.length>0){
+        setSaved(true);
+        setTimeout(()=>setSaved(false),1500);
+        // Build full backup payload
+        const allRd={};
+        for(let i=0;i<localStorage.length;i++){
+          const k=localStorage.key(i);
+          if(k&&k.startsWith('pm_r_'))allRd[k]=localStorage.getItem(k);
+        }
+        const payload={
+          s:JSON.stringify(S),
+          p:JSON.stringify(PAY),
+          month:month,
+          rd:allRd,
+          ts:Date.now()
+        };
+        pushToSheets(payload);
+      }
+    },500);
+    return()=>clearTimeout(t);
+  },[S,PAY,month]);
+
+  const onMonthChange=m=>{
+    // Save current readings first
+    const rd={};
+    S.buildings.forEach(b=>b.rooms.forEach(r=>r.meters.forEach(mt=>{if(!rd[r.id])rd[r.id]={};rd[r.id][mt.id]={last:mt.last||'',curr:mt.curr||''};})));
+    lsSet('pm_r_'+month,rd);
+    lsSet('pm_s',S);
+    setMonth(m);
+    localStorage.setItem('pm_month',m);
+    // Load readings for new month
+    const saved_rd=lsGet('pm_r_'+m);
+    if(saved_rd){
+      // Month has data - load it
+      setS(p=>({...p,buildings:p.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>{const x=saved_rd[r.id]?.[mt.id];return x?{...mt,last:x.last||'',curr:x.curr||''}:{...mt,last:'',curr:''};})}))}))})  );
+    }else{
+      // New month - auto copy current → last
+      const prev_rd=lsGet('pm_r_'+getPK(m));
+      if(prev_rd){
+        setS(p=>({...p,buildings:p.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>{const x=prev_rd[r.id]?.[mt.id];return x?{...mt,last:x.curr||'',curr:''}:{...mt,last:'',curr:''};})}))}))})  );
+        showToast('✅ Last month current readings copied as new Last readings!');
+      }else{
+        setS(p=>({...p,buildings:p.buildings.map(b=>({...b,rooms:b.rooms.map(r=>({...r,meters:r.meters.map(mt=>({...mt,last:'',curr:''}))}))}))})  );
+      }
+    }
+    showToast('📅 '+fmt(m));
   };
 
-  function loadFromCloud(){
-    var bid = getBinId();
-    if(!bid){
-      // Check if there's data in old Firebase path - show enter code option
-      ge('BL').innerHTML='<div style="text-align:center;padding:40px 20px;color:#484f58">' +
-        '<div style="font-size:2.5rem;margin-bottom:12px">🏢</div>' +
-        '<div style="font-weight:600;font-size:1rem;color:#8b949e;margin-bottom:10px">Welcome to PropertyManager</div>' +
-        '<div style="font-size:.82rem;margin-bottom:16px">Start fresh or enter your sync code if you have existing data</div>' +
-        '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
-          '<button class="btn b-blue" onclick="document.getElementById('syncCodeModal').classList.add('on')">🔗 Enter Sync Code</button>' +
-        '</div>' +
-      '</div>';
-      return;
-    }
-    ge('BL').innerHTML='<div style="text-align:center;padding:40px 20px;color:#484f58"><div style="font-size:2rem;margin-bottom:8px">☁️</div><div style="font-size:.9rem;color:#8b949e">Loading your data...</div></div>';
-    fetch('https://api.jsonbin.io/v3/b/'+bid+'/latest', {headers: HEADERS})
-      .then(function(r){return r.json();})
-      .then(function(d){
-        if(!d.record||!d.record.struct){renderBilling();return;}
-        var v = d.record;
-        try{S=JSON.parse(v.struct);}catch(e){}
-        try{if(v.pay)PAY=JSON.parse(v.pay);}catch(e){}
-        if(v.month){localStorage.setItem('ubm_month',v.month);ge('MP').value=v.month;lastM=v.month;}
-        Object.keys(v).forEach(function(k){if(k.startsWith('ubm_r_'))localStorage.setItem(k,v[k]);});
-        localStorage.setItem('ubm_struct',v.struct);
-        if(v.pay)localStorage.setItem('ubm_pay',v.pay);
-        localStorage.setItem('ubm_ts',v.ts||Date.now());
-        loadMonth(ge('MP').value);
-        var cnt=S.buildings.reduce(function(s,b){return s+b.rooms.length;},0);
-        toast('✅ '+S.buildings.length+' buildings, '+cnt+' rooms loaded!');
-      })
-      .catch(function(){
-        // Offline - use local data
-        renderBilling();
-        if(S.buildings.length>0) toast('📴 Offline - showing local data');
-      });
-  }
+  const allMs=useCallback(()=>{const ms=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('pm_r_'))ms.push(k.replace('pm_r_',''));}return ms.sort();},[]);
+  const getMS=useCallback(m=>{const st=lsGet('pm_s');if(!st)return null;const rd=lsGet('pm_r_'+m);if(rd){st.buildings.forEach(b=>b.rooms.forEach(r=>r.meters.forEach(mt=>{const x=rd[r.id]?.[mt.id];mt.last=x?x.last:'';mt.curr=x?x.curr:'';})));}return st;},[]);
 
-  // Load from cloud on startup
-  loadFromCloud();
+  const NAVS=[{id:'b',i:'🏢',l:'Billing'},{id:'o',i:'💰',l:'Outstanding'},{id:'t',i:'👤',l:'Tenants'},{id:'d',i:'📊',l:'Dashboard'}];
 
-  // Sync code modal - for brother to connect
-  setTimeout(function(){
-    var bid2=getBinId();
-    if(bid2){
-      ge('savedTxt').textContent='Sync code: '+bid2;
-      ge('savedTxt').classList.add('on');
-      setTimeout(function(){ge('savedTxt').classList.remove('on');},3000);
-    }
-  },500);
+  return(
+    <div style={{background:'#0d1117',minHeight:'100vh',color:'#e6edf3',fontFamily:'system-ui,-apple-system,sans-serif'}}>
+      {toastMsg&&<div style={{position:'fixed',bottom:80,left:'50%',transform:'translateX(-50%)',background:'#161b22',border:'1px solid #30363d',borderRadius:9,padding:'9px 18px',fontSize:'.78rem',fontWeight:600,zIndex:999,whiteSpace:'nowrap',boxShadow:'0 4px 20px rgba(0,0,0,.6)',pointerEvents:'none'}}>{toastMsg}</div>}
+      <div style={{background:'#161b22',borderBottom:'1px solid #21262d',padding:'10px 14px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,gap:8}}>
+        <div style={{fontWeight:700,fontSize:'.95rem'}}>🏢 Property<b style={{color:'#58a6ff'}}>Manager</b></div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          {saved&&<span style={{fontSize:'.68rem',color:'#3fb950'}}>✅ Saved</span>}
+          <input type="month" value={month} onChange={e=>onMonthChange(e.target.value)} style={{background:'#0d1117',border:'1px solid #30363d',borderRadius:6,padding:'5px 9px',color:'#e6edf3',fontSize:'.78rem',outline:'none',colorScheme:'dark'}}/>
+        </div>
+      </div>
+      <div style={{background:'#161b22',borderBottom:'1px solid #21262d',display:'flex',overflowX:'auto'}}>
+        {NAVS.map(n=>(
+          <button key={n.id} onClick={()=>setPage(n.id)} style={{flex:1,border:'none',background:'none',color:page===n.id?'#58a6ff':'#8b949e',fontFamily:'inherit',fontSize:'.7rem',fontWeight:page===n.id?700:500,padding:'9px 4px',cursor:'pointer',borderBottom:page===n.id?'2px solid #58a6ff':'2px solid transparent',marginBottom:-1,minWidth:60}}>
+            <span style={{display:'block',fontSize:'.95rem',marginBottom:2}}>{n.i}</span>{n.l}
+          </button>
+        ))}
+      </div>
+      <div style={{padding:'14px 12px 80px',maxWidth:900,margin:'0 auto'}}>
+        {page==='b'&&<BillingPage S={S} setS={setS} PAY={PAY} setPAY={setPAY} month={month} showToast={showToast} allMs={allMs} getMS={getMS}/>}
+        {page==='o'&&<OutstandingPage S={S} PAY={PAY} setPAY={setPAY} allMs={allMs} getMS={getMS} showToast={showToast}/>}
+        {page==='t'&&<TenantsPage S={S} PAY={PAY} allMs={allMs} getMS={getMS}/>}
+        {page==='d'&&<DashboardPage S={S} PAY={PAY} month={month} allMs={allMs} getMS={getMS}/>}
+      </div>
+    </div>
+  );
+}
 
-  // SW
-  if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(regs){regs.forEach(function(r){r.unregister();});});setTimeout(function(){navigator.serviceWorker.register('sw.js').catch(function(){});},1000);}
-  var dP=null;
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dP=e;ge('installBanner').style.display='flex';});
-  ge('installBtn').addEventListener('click',function(){if(dP){dP.prompt();dP.userChoice.then(function(){dP=null;ge('installBanner').style.display='none';});}});
-  window.addEventListener('appinstalled',function(){ge('installBanner').style.display='none';});
-})();
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
 </script>
 </body>
 </html>
